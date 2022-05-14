@@ -1,0 +1,59 @@
+<%- include('./partials/header') %>
+<div
+  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight mt-5 pt-5"
+>
+  <h4 class="mb-4">Create Account</h4>
+  <form action="/signup" method="POST">
+    <!-- First name -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="first_name"
+        id="first_name"
+        placeholder="First Name"
+        class="form-control"
+        required
+      />
+    </div>
+    <!-- Last name -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="last_name"
+        id="last_name"
+        placeholder="Last Name"
+        class="form-control"
+        required
+      />
+    </div>
+    <!-- Email -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="email"
+        id="email"
+        placeholder="Email"
+        class="form-control"
+        required
+      />
+    </div>
+    <!-- Password -->
+    <div class="mb-3">
+      <input
+        type="password"
+        name="password"
+        id="password"
+        placeholder="Password"
+        class="form-control"
+        required
+      />
+    </div>
+    <!-- Submit -->
+    <!-- <input type="submit" value="Submit" /> -->
+    <div class="mb-3 d-flex flex-column align-items-center">
+      <button type="submit" class="btn btn-primary form-control">
+        SIGN UP
+      </button>
+    </div>
+  </form>
+</div>

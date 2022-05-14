@@ -1,0 +1,89 @@
+<%- include('./partials/header') %>
+
+<div
+  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight mt-5 pt-5"
+>
+  <h4 class="mb-4">New Event</h4>
+  <form action="/newEvent" method="POST" enctype="multipart/form-data">
+    <!-- Event Name  -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="event_name"
+        id="event_name"
+        placeholder="Event Name"
+        class="form-control"
+      />
+    </div>
+    <!-- Start Date & Time  -->
+    <div class="mb-3">
+      <label for="start_date&time">Start Date and Time</label>
+      <div>
+        <input
+          type="date"
+          name="start_date"
+          id="start_date"
+          placeholder="Start Date"
+          value=""
+        />
+        <input
+          type="time"
+          name="start_time"
+          id="start_time"
+          placeholder="Start Time"
+        />
+      </div>
+    </div>
+    <!-- End Date & Time  -->
+    <div class="mb-3">
+      <label for="end_date&time">End Date and Time</label>
+      <div>
+        <input type="date" name="end_date" id="end_date" placeholder="End Date" />
+        <input type="time" name="end_time" id="end_time" placeholder="End Time" />
+      </div>
+    </div>
+    <!-- Event type  -->
+    <div class="mb-3">
+      <input type="radio" name="in_person" id="in_person">
+      <label for="in_person">In Person</label>
+      <input type="radio" name="online" id="online">
+      <label for="online">Online</label>
+    </div>
+    <!-- Location  -->
+    <div class="mb-3">
+      <input type="text" name="" id="searchInput" class="form-control"/>
+      <input id="address" name="address" value="" type="hidden" placeholder="" class="form-control"/>
+    </div>
+    <!-- Description  -->
+    <div class="mb-3">
+      <textarea
+        class="form-control"
+        id="description"
+        placeholder="description"
+        name="description"
+      >
+      Description
+      </textarea>
+    </div>
+  </form>
+</div>
+
+<script
+  async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8S8x0yhOf9F_j12maO92LCZqq6MgxTs4&libraries=places&callback=initMap"
+></script>
+
+<script>
+  function initMap() {
+    var input = document.getElementById("searchInput");
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.addListener("place_changed", function () {
+      var place = autocomplete.getPlace();
+      document.getElementById("address").value = JSON.stringify(
+        place.address_components
+      );
+    });
+  }
+</script>
+  </body>
+</html>
