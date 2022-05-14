@@ -191,11 +191,16 @@ const isLoggedIn = (req, res, next) => {
  ***************  Routes  *****************
  */
 app.get("/", displayHomepage);
-// Sign up and Log in routes
+// Sign up and Log in/out routes
 app.get("/signup", createUserAccount);
 app.post("/signup", postUserAccount);
 app.get("/login", renderUserLogin);
 app.post("/login", authUserLogin);
+app.get("/logout", (req, res) => {
+  res.clearCookie("loggedIn");
+  res.clearCookie("userId");
+  res.redirect("/login");
+});
 
 // Event routes
 app.get("/events", isLoggedIn, showEvents);
