@@ -1,7 +1,7 @@
 <%- include('./partials/header') %>
 
 <div
-  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight mt-5 pt-5"
+  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">New Event</h4>
   <form action="/newEvent" method="POST" enctype="multipart/form-data">
@@ -11,13 +11,14 @@
         type="text"
         name="event_name"
         id="event_name"
-        placeholder="Event Name"
+        placeholder="Event Name *"
         class="form-control"
+        required
       />
     </div>
     <!-- Start Date & Time  -->
     <div class="mb-3">
-      <label for="start_date&time">Start Date and Time</label>
+      <label for="start_date&time">Start Date and Time *</label>
       <div>
         <input
           type="date"
@@ -25,12 +26,14 @@
           id="start_date"
           placeholder="Start Date"
           class="pick_date"
+          required
         />
         <input
           type="time"
           name="start_time"
           id="start_time"
           placeholder="Start Time"
+          required
         />
       </div>
     </div>
@@ -42,15 +45,39 @@
         <input type="time" name="end_time" id="end_time" placeholder="End Time"/>
       </div>
     </div>
-    <!-- Event type  -->
+    <!-- Event types  -->
     <div class="mb-3">
-      <input type="radio" name="in_person" id="in_person">
-      <label for="in_person">In Person</label>
-      <input type="radio" name="online" id="online">
-      <label for="online">Online</label>
+      <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
+        <div class="eventType">
+          <input type="radio" name="event_types" onclick="showLocation()">
+          <label for="in_person">In Person</label>
+        </div>
+        <div class="eventType">
+          <input type="radio" name="event_types" onclick="hideLocation()">
+          <label for="online">Online</label>
+        </div>
+      </div>
+      <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
+        <div class="eventType">
+          <input type="radio" name="types">
+          <label for="public">Public Event</label>
+        </div>
+        <div class="eventType">
+          <input type="radio" name="types">
+          <label for="private">Private Event</label>
+        </div>
+      </div>
+    </div>
+    <!-- External Event Link  -->
+    <div class="mb-3" id="event_link">
+      <input type="url" name="url" id="url"
+       placeholder="External Event Link: https://example.com"
+       pattern="https://.*" size="30"
+       class="form-control"
+       required>
     </div>
     <!-- Location  -->
-    <div class="mb-3">
+    <div class="mb-3" id="location" style="display: none;">
       <input type="text" name="" id="searchInput" class="form-control"/>
       <input id="address" name="address" value="" type="hidden" placeholder="" class="form-control"/>
     </div>
@@ -61,8 +88,7 @@
         id="description"
         placeholder="description"
         name="description"
-      >
-      Description
+      >Description
       </textarea>
     </div>
     <div class="mb-3 d-flex flex-column align-items-center">
@@ -77,6 +103,7 @@
 ></script>
 
 <script>
+  // Autocomplete location
   function initMap() {
     var input = document.getElementById("searchInput");
     var autocomplete = new google.maps.places.Autocomplete(input);
@@ -87,14 +114,22 @@
       );
     });
   }
-</script>
 
-<script>
+  // Date picker, set today as default date
   const inputDates = document.querySelectorAll(".pick_date");
   inputDates.forEach(inputDate => {
     inputDate.min = new Date().toISOString().split("T")[0];
     inputDate.valueAsDate =  new Date();
   })
+
+  // Show/Hide location div
+  const locationDiv = document.getElementById('location');
+  const showLocation = () => {
+    locationDiv.style.display = "block";
+  }
+  const hideLocation = () => {
+    locationDiv.style.display = "none";
+  }
 </script>
   </body>
 </html>

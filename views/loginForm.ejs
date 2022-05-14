@@ -1,6 +1,6 @@
 <%- include('./partials/header') %>
 <div
-  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight mt-5 pt-5"
+  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">LOG IN</h4>
   <form action="/login" method="POST">
@@ -27,7 +27,7 @@
     <!-- <input type="submit" value="Submit" /> -->
     <div class="mb-3 d-flex flex-column align-items-center">
       <button type="submit" class="btn btn-primary form-control">LOG IN</button>
-      <label for="signup">Don't have an account?</label>
+      <label for="signup" class="my-2">Don't have an account?</label>
       <a href="/signup" type="submit" class="btn btn-primary form-control"
         >SIGN UP NOW</a
       >

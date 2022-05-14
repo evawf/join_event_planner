@@ -27,17 +27,9 @@ body {
   align-items: center;
 }
 
-.logo_nav {
-  height: 40px;
-}
-
 h2,
 footer {
   text-align: center;
-}
-
-.homeBtn {
-  width: 114px;
 }
 
 .btn:hover {
@@ -45,84 +37,14 @@ footer {
 }
 
 form {
-  width: 280px;
-  padding: 0 5px;
-  padding-top: 5px;
+  width: 100%;
+  padding: 5px 5px;
+  padding-top: 20px;
   border: 1px solid gray;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(50px);
+  border-radius: 20px;
 }
 
-.observation {
-  height: 150px;
-}
-
-.summary {
-  height: 100px;
-}
-
-.cardContainer {
-  padding: 0;
-}
-
-.card {
-  margin: 0;
-  box-shadow: 0 0 5px 0 rgba(22, 22, 26, 0.25);
-  width: 19rem;
-  height: 30rem;
-  background: none;
-  backdrop-filter: blur(4px);
-  color: white;
-  border: 1px solid gray;
-}
-
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-}
-
-.card img {
-  height: 50%;
-  width: auto;
-}
-
-.noteCardDiv {
-  background: none;
-}
-
-.noteCard {
-  background: none;
-  backdrop-filter: blur(10px);
-  color: white;
-  border: 1px solid gray;
-  height: 100%;
-}
-
-@media only screen and (min-width: 425px) {
-  form {
-    width: 380px;
-    padding: 0 20px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-  }
-
-  .cardContainer {
-    width: 300px;
-  }
-
-  .noteCard {
-    height: auto;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  form {
-    width: 500px;
-    padding: 0 30px;
-    padding-top: 20px;
-    padding-bottom: 10px;
-  }
-
-  .noteCard {
-    width: 850px;
-    height: auto;
-  }
+.eventType {
+  width: 115px;
 }
