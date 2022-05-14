@@ -24,7 +24,7 @@
           name="start_date"
           id="start_date"
           placeholder="Start Date"
-          value=""
+          class="pick_date"
         />
         <input
           type="time"
@@ -38,8 +38,8 @@
     <div class="mb-3">
       <label for="end_date&time">End Date and Time</label>
       <div>
-        <input type="date" name="end_date" id="end_date" placeholder="End Date" />
-        <input type="time" name="end_time" id="end_time" placeholder="End Time" />
+        <input type="date" name="end_date" id="end_date" placeholder="End Date" class="pick_date"/>
+        <input type="time" name="end_time" id="end_time" placeholder="End Time"/>
       </div>
     </div>
     <!-- Event type  -->
@@ -87,6 +87,14 @@
       );
     });
   }
+</script>
+
+<script>
+  const inputDates = document.querySelectorAll(".pick_date");
+  inputDates.forEach(inputDate => {
+    inputDate.min = new Date().toISOString().split("T")[0];
+    inputDate.valueAsDate =  new Date();
+  })
 </script>
   </body>
 </html>

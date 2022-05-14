@@ -190,7 +190,10 @@ const isLoggedIn = (req, res, next) => {
 /*
  ***************  Routes  *****************
  */
+
+// Render Homepage
 app.get("/", displayHomepage);
+
 // Sign up and Log in/out routes
 app.get("/signup", createUserAccount);
 app.post("/signup", postUserAccount);
