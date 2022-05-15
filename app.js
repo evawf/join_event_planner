@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+// import { client_encoding } from "pg/lib/defaults";
 
 if (process.env.ENV !== "production") {
   dotenv.config();
@@ -134,10 +135,25 @@ const authUserLogin = async (req, res) => {
 
 const showEvents = async (req, res) => {
   try {
-    res.render("events");
+    // Public Events - Blue
+    const userId = req.cookies.userId;
+    const publicEventsData = await pool.query(
+      `SELECT * FROM events INNER JOIN event_types ON events.id=event_types.event_id WHERE event_types.type2_id=2 AND events.owner_id!=${userId}`
+    );
+    console.log(publicEventsData.rows);
+    // Events I created - Pink
+    const myEventsData = await pool.query(
+      `SELECT * FROM events WHERE owner_id=${userId}`
+    );
+    console.log(myEventsData.rows);
+    // Events I was invited - Green - To Be Added Later
+    res.render("events", {
+      publicEvents: publicEventsData.rows,
+      myEvents: myEventsData.rows,
+    });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, new event is not working!");
+    res.status(404).send("Sorry, unable to get the event list!");
     return;
   }
 };
@@ -152,24 +168,40 @@ const createEvent = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, new event is not working!");
+    res.status(404).send("Sorry, can't find create event page!");
     return;
   }
 };
 
 const postEvent = async (req, res) => {
   try {
-    const data = [
-      req.body.event_name.trim(),
-      req.body.start_date,
-      req.body.start_time,
-      req.body.end_date,
-      req.body.end_time,
-      req.body.event_link,
-      req.body.event_location,
-      req.body.description.trim(),
-      req.cookies.userId,
-    ];
+    let data = [];
+    if (req.body.event_location) {
+      data = [
+        req.body.event_name.trim(),
+        req.body.start_date,
+        req.body.start_time,
+        req.body.end_date,
+        req.body.end_time,
+        req.body.event_link,
+        req.body.event_location,
+        req.body.description.trim(),
+        req.cookies.userId,
+      ];
+    } else {
+      data = [
+        req.body.event_name.trim(),
+        req.body.start_date,
+        req.body.start_time,
+        req.body.end_date,
+        req.body.end_time,
+        req.body.event_link,
+        "Online",
+        req.body.description.trim(),
+        req.cookies.userId,
+      ];
+    }
+
     const eventData = await pool.query(
       "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING * ",
       data
@@ -184,7 +216,7 @@ const postEvent = async (req, res) => {
     res.redirect("/events");
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, new event is not working!");
+    res.status(404).send("Sorry, new event page is not working!");
     return;
   }
 };
