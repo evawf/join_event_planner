@@ -4,7 +4,7 @@
   class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">New Event</h4>
-  <form action="/newEvent" method="POST" enctype="multipart/form-data">
+  <form action="/newEvent" method="POST">
     <!-- Event Name  -->
     <div class="mb-3">
       <input
@@ -13,7 +13,6 @@
         id="event_name"
         placeholder="Event Name *"
         class="form-control"
-        required
       />
     </div>
     <!-- Start Date & Time  -->
@@ -26,14 +25,14 @@
           id="start_date"
           placeholder="Start Date"
           class="pick_date"
-          required
+          
         />
         <input
           type="time"
           name="start_time"
           id="start_time"
           placeholder="Start Time"
-          required
+          
         />
       </div>
     </div>
@@ -48,37 +47,32 @@
     <!-- Event types  -->
     <div class="mb-3">
       <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
-        <div class="eventType">
-          <input type="radio" name="event_types" onclick="showLocation()">
-          <label for="in_person">In Person</label>
-        </div>
-        <div class="eventType">
-          <input type="radio" name="event_types" onclick="hideLocation()">
-          <label for="online">Online</label>
-        </div>
-      </div>
+        <% type1s.forEach((type1) => { %>
+          <div class="eventType">
+            <input type="radio" class="event_type1s" name="event_type1s" value="<%= type1.id %>" onclick="toggle_location()">
+            <label for="event_type2s"><%= type1.name %></label>
+          </div>
+        <% }) %>
+      </div> 
       <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
-        <div class="eventType">
-          <input type="radio" name="types">
-          <label for="public">Public Event</label>
-        </div>
-        <div class="eventType">
-          <input type="radio" name="types">
-          <label for="private">Private Event</label>
-        </div>
+        <% type2s.forEach((type2) => { %>
+          <div class="eventType">
+            <input type="radio" class="event_type2s" name="event_type2s" value="<%= type2.id %>">
+            <label for="event_type1s"><%= type2.name %></label>
+          </div>
+        <% }) %>
       </div>
     </div>
     <!-- External Event Link  -->
-    <div class="mb-3" id="event_link">
-      <input type="url" name="url" id="url"
+    <div class="mb-3">
+      <input type="url" name="event_link" id="event_link"
        placeholder="External Event Link: https://example.com"
        pattern="https://.*" size="30"
-       class="form-control"
-       required>
+       class="form-control">
     </div>
     <!-- Location  -->
     <div class="mb-3" id="location" style="display: none;">
-      <input type="text" name="" id="searchInput" class="form-control"/>
+      <input type="text" name="event_location" id="searchInput" class="form-control"/>
       <input id="address" name="address" value="" type="hidden" placeholder="" class="form-control"/>
     </div>
     <!-- Description  -->
@@ -124,12 +118,15 @@
 
   // Show/Hide location div
   const locationDiv = document.getElementById('location');
-  const showLocation = () => {
-    locationDiv.style.display = "block";
+  const event_type1s = document.querySelectorAll(".event_type1s");
+  const toggle_location = () => {
+      if(event_type1s[0].checked){
+        locationDiv.style.display = "block";
+      } else {
+        locationDiv.style.display = "none";
+      }
   }
-  const hideLocation = () => {
-    locationDiv.style.display = "none";
-  }
+
 </script>
   </body>
 </html>

@@ -137,7 +137,40 @@ const showEvents = (req, res) => {
 };
 
 const createEvent = async (req, res) => {
-  res.render("newEvent");
+  try {
+    const type1sData = await pool.query("SELECT * FROM type1s");
+    const type2sData = await pool.query("SELECT * FROM type2s");
+    res.render("newEvent", {
+      type1s: type1sData.rows,
+      type2s: type2sData.rows,
+    });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, new event is not working!");
+    return;
+  }
+};
+
+const postEvent = (req, res) => {
+  const eventData = [
+    req.body.event_name.trim(),
+    req.body.start_date,
+    req.body.start_time,
+    req.body.end_date,
+    req.body.end_time,
+    req.body.event_link,
+    req.body.event_location,
+    req.body.description.trim(),
+  ];
+  const type1Data = req.body.event_type1s;
+  const type2Data = req.body.event_type2s;
+
+  console.log(eventData);
+  console.log(type1Data);
+  console.log(type2Data);
+
+  res.send("data sent");
+  // const eventData = await pool.query("INSERT INTO events");
 };
 
 /***************************************************************
@@ -208,7 +241,7 @@ app.get("/logout", (req, res) => {
 // Event routes
 app.get("/events", isLoggedIn, showEvents);
 app.get("/newEvent", isLoggedIn, createEvent);
-// app.post("/newEvent", postEvent);
+app.post("/newEvent", isLoggedIn, postEvent);
 // app.get("/event/:id/edit", editEvent);
 
 app.listen(PORT, () => {
