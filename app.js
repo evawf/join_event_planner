@@ -132,8 +132,14 @@ const authUserLogin = async (req, res) => {
   }
 };
 
-const showEvents = (req, res) => {
-  res.render("events");
+const showEvents = async (req, res) => {
+  try {
+    res.render("events");
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, new event is not working!");
+    return;
+  }
 };
 
 const createEvent = async (req, res) => {
@@ -151,26 +157,36 @@ const createEvent = async (req, res) => {
   }
 };
 
-const postEvent = (req, res) => {
-  const eventData = [
-    req.body.event_name.trim(),
-    req.body.start_date,
-    req.body.start_time,
-    req.body.end_date,
-    req.body.end_time,
-    req.body.event_link,
-    req.body.event_location,
-    req.body.description.trim(),
-  ];
-  const type1Data = req.body.event_type1s;
-  const type2Data = req.body.event_type2s;
-
-  console.log(eventData);
-  console.log(type1Data);
-  console.log(type2Data);
-
-  res.send("data sent");
-  // const eventData = await pool.query("INSERT INTO events");
+const postEvent = async (req, res) => {
+  try {
+    const data = [
+      req.body.event_name.trim(),
+      req.body.start_date,
+      req.body.start_time,
+      req.body.end_date,
+      req.body.end_time,
+      req.body.event_link,
+      req.body.event_location,
+      req.body.description.trim(),
+      req.cookies.userId,
+    ];
+    const eventData = await pool.query(
+      "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING * ",
+      data
+    );
+    const event_id = eventData.rows[0].id;
+    const type1_id = req.body.event_type1s;
+    const type2_id = req.body.event_type2s;
+    await pool.query(
+      "INSERT INTO event_types (event_id, type1_id, type2_id) VALUES ($1, $2, $3) RETURNING * ",
+      [event_id, type1_id, type2_id]
+    );
+    res.redirect("/events");
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, new event is not working!");
+    return;
+  }
 };
 
 /***************************************************************
