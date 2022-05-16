@@ -1,0 +1,22 @@
+<%- include('./partials/header') %>
+
+<div class="container-fluid">
+  <div class="card text-body my-1 bg-info bg-gradient">
+    <div class="card-body overflow-auto">
+      <div class="card-title">
+        <h5><%= event.name %></h5>
+      </div>
+      <hr />
+      <div class="card-content">
+        <p class="card-text my-1">
+          <%= event.start_time %> <%=
+          event.start_date.toLocaleDateString('el-GR') %>
+        </p>
+        <p class="card-text my-1"><%= event.event_location %></p>
+      </div>
+    </div>
+    <div class="card-foot"></div>
+  </div>
+</div>
+
+<%- include('./partials/eventsFooter') %>

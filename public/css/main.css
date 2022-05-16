@@ -33,7 +33,7 @@ footer {
 }
 
 .navbar {
-  height: 2.5rem;
+  height: 2.7rem;
 }
 
 .btn:hover {
@@ -53,6 +53,53 @@ form {
   width: 115px;
 }
 
-.card {
+.container-fluid {
+  position: relative;
+  display: flex;
+  justify-content: end;
+  /* align-items: center; */
+  flex-wrap: wrap;
+}
+
+.container-fluid .card {
+  position: relative;
+  background: none;
+  border: none;
+}
+
+.card:hover {
   border-radius: 20px;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.container-fluid .card:hover .card-body {
+  /* transform: translate(-3.5rem, -3.5rem); */
+  z-index: 1;
+}
+
+.container-fluid .card:hover .card-foot {
+  z-index: 2;
+  transform: translate(0rem, 0.7rem);
+}
+
+.card-body {
+  object-fit: cover;
+  resize: both;
+  z-index: 2;
+  border-radius: 20px;
+}
+
+.card-foot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  background-color: none;
+  z-index: 1;
+  align-items: flex-end;
+  text-align: center;
+  transition: 0.5s ease-in-out;
+  display: none;
 }

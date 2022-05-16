@@ -162,6 +162,20 @@ const showAllEvents = async (req, res) => {
   }
 };
 
+const showMyEvents = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    const myEventsData = await pool.query(
+      `SELECT * FROM events WHERE owner_id=${userId}`
+    );
+    res.render("myEvents", { myEvents: myEventsData.rows });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, unable to get the my event list!");
+    return;
+  }
+};
+
 const createEvent = async (req, res) => {
   try {
     const type1sData = await pool.query("SELECT * FROM type1s");
@@ -213,6 +227,20 @@ const postEvent = async (req, res) => {
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, new event page is not working!");
+    return;
+  }
+};
+
+const displayEventInfo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
+      id,
+    ]);
+    res.render("event", { event: eventData.rows[0] });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event page is not working!");
     return;
   }
 };
@@ -281,8 +309,10 @@ app.get("/logout", logoutUser);
 
 // Event routes
 app.get("/events", isLoggedIn, showAllEvents);
+app.get("/myEvents", isLoggedIn, showMyEvents);
 app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
+app.get("/event/:id", isLoggedIn, displayEventInfo);
 // app.get("/event/:id/edit", isLoggedIn, editEvent);
 // app.post("/event/:id/edit", isLoggedIn, updateEvent);
 // app.delete("/event/:id", isLoggedIn, deleteEvent)
