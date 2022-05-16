@@ -133,6 +133,10 @@ const authUserLogin = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  await res.clearCookie("loggedIn").clearCookie("userId").redirect("/login");
+};
+
 const showAllEvents = async (req, res) => {
   try {
     // Public Events - Blue
@@ -252,12 +256,13 @@ app.use((req, res, next) => {
   }
   next();
 });
-const isLoggedIn = (req, res, next) => {
+
+const isLoggedIn = async (req, res, next) => {
   if (req.isUserLoggedIn) {
     next();
     return;
   }
-  res.redirect("/login");
+  await res.redirect("/login");
 };
 
 /*
@@ -272,11 +277,7 @@ app.get("/signup", createUserAccount);
 app.post("/signup", postUserAccount);
 app.get("/login", renderUserLogin);
 app.post("/login", authUserLogin);
-app.get("/logout", (req, res) => {
-  res.clearCookie("loggedIn");
-  res.clearCookie("userId");
-  res.redirect("/login");
-});
+app.get("/logout", logoutUser);
 
 // Event routes
 app.get("/events", isLoggedIn, showAllEvents);
