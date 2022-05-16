@@ -32,6 +32,10 @@ footer {
   text-align: center;
 }
 
+.navbar {
+  height: 2.5rem;
+}
+
 .btn:hover {
   background-color: #ff8c32;
 }
@@ -47,4 +51,8 @@ form {
 
 .eventType {
   width: 115px;
+}
+
+.card {
+  border-radius: 20px;
 }

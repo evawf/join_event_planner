@@ -133,19 +133,19 @@ const authUserLogin = async (req, res) => {
   }
 };
 
-const showEvents = async (req, res) => {
+const showAllEvents = async (req, res) => {
   try {
     // Public Events - Blue
     const userId = req.cookies.userId;
     const publicEventsData = await pool.query(
       `SELECT * FROM events INNER JOIN event_types ON events.id=event_types.event_id WHERE event_types.type2_id=2 AND events.owner_id!=${userId}`
     );
-    console.log(publicEventsData.rows);
+    // console.log(publicEventsData.rows);
     // Events I created - Pink
     const myEventsData = await pool.query(
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
-    console.log(myEventsData.rows);
+    // console.log(myEventsData.rows);
     // Events I was invited - Green - To Be Added Later
     res.render("events", {
       publicEvents: publicEventsData.rows,
@@ -175,33 +175,25 @@ const createEvent = async (req, res) => {
 
 const postEvent = async (req, res) => {
   try {
-    let data = [];
+    let location = [];
     if (req.body.event_location) {
-      data = [
-        req.body.event_name.trim(),
-        req.body.start_date,
-        req.body.start_time,
-        req.body.end_date,
-        req.body.end_time,
-        req.body.event_link,
-        req.body.event_location,
-        req.body.description.trim(),
-        req.cookies.userId,
-      ];
+      location = [req.body.event_location];
     } else {
-      data = [
-        req.body.event_name.trim(),
-        req.body.start_date,
-        req.body.start_time,
-        req.body.end_date,
-        req.body.end_time,
-        req.body.event_link,
-        "Online",
-        req.body.description.trim(),
-        req.cookies.userId,
-      ];
+      location = "Online";
     }
 
+    const data = [
+      req.body.event_name.trim(),
+      req.body.start_date,
+      req.body.start_time,
+      req.body.end_date,
+      req.body.end_time,
+      req.body.event_link,
+      location,
+      req.body.description.trim(),
+      req.cookies.userId,
+    ];
+    // console.log(data);
     const eventData = await pool.query(
       "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING * ",
       data
@@ -287,10 +279,12 @@ app.get("/logout", (req, res) => {
 });
 
 // Event routes
-app.get("/events", isLoggedIn, showEvents);
+app.get("/events", isLoggedIn, showAllEvents);
 app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
-// app.get("/event/:id/edit", editEvent);
+// app.get("/event/:id/edit", isLoggedIn, editEvent);
+// app.post("/event/:id/edit", isLoggedIn, updateEvent);
+// app.delete("/event/:id", isLoggedIn, deleteEvent)
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);

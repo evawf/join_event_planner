@@ -1,6 +1,10 @@
 <footer class="footer mt-auto py-3 bg-light fixed-bottom bg-light">
         <div class="container d-flex justify-content-center align-items-center">
-         <a href="/login" class="btn btn-info">Login</a>
+          <% if(!loggedIn) { %>
+            <a href="/login" class="btn btn-info">Login</a>
+          <% } else { %>
+            <a href="/logout" class="btn btn-info">Logout</a>
+          <% } %>
         </div>
       </footer>
 
