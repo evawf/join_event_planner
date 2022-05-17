@@ -3,7 +3,7 @@
 <div
   class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5"
 >
-  <div class="card text-body my-1 bg-info bg-gradient">
+  <div class="card text-body my-1 bg-light bg-gradient">
     <div class="card-body overflow-auto">
       <div class="card-title d-flex justify-content-center my-0">
         <h5 class="my-0"><%= event.name %></h5>
@@ -22,12 +22,23 @@
         <hr />
         <p class="card-text my-1">Description: <%= event.description %></p>
         <hr />
-        <p class="card-text my-1">Host:</p>
+        <p class="card-text my-1">
+          Host: <%= owner.first_name %> <%= owner.last_name %>
+        </p>
       </div>
     </div>
-    <div class="card-foot">
-      <a href="/event/<%= event.id %>/edit">Edit</a>
+    <% if(currentUser.id === event.owner_id) { %>
+    <div class="card-footer d-flex flex-row justify-content-center">
+      <a href="/event/<%= event.id %>/edit" class="btn btn-warning mx-5"
+        >Edit</a
+      >
+      <a href="/event/<%= event.id %>" class="btn btn-danger">Delete</a>
     </div>
+    <% } else { %>
+    <div class="card-footer d-flex flex-row">
+      <a href="/myEvents" class="btn btn-success">Join</a>
+    </div>
+    <% } %>
   </div>
 </div>
 

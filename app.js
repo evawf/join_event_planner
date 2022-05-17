@@ -237,7 +237,16 @@ const displayEventInfo = async (req, res) => {
     const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
       id,
     ]);
-    res.render("event", { event: eventData.rows[0] });
+    const userId = req.cookies.userId;
+    const ownerId = eventData.rows[0].owner_id;
+    const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      ownerId,
+    ]);
+    res.render("event", {
+      event: eventData.rows[0],
+      userId: userId,
+      owner: ownerData.rows[0],
+    });
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, event page is not working!");
