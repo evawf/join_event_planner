@@ -3,7 +3,7 @@
 <div
   class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
-  <h4 class="mb-4">New Event</h4>
+  <h4 class="mb-4">Update Event</h4>
   <form action="/event/<%= event.id %>/edit?_method=PUT" method="POST">
     <!-- Event Name  -->
     <div class="mb-3">
@@ -42,40 +42,86 @@
     <div class="mb-3">
       <label for="end_date&time">End Date and Time</label>
       <div>
-        <input type="date" name="end_date" id="end_date" placeholder="End Date" value="<%= event.end_date %>"/>
-        <input type="time" name="end_time" id="end_time" placeholder="End Time" value="<%= event.end_time %>"/>
+        <input
+          type="date"
+          name="end_date"
+          id="end_date"
+          placeholder="End Date"
+          value="<%= event.end_date %>"
+        />
+        <input
+          type="time"
+          name="end_time"
+          id="end_time"
+          placeholder="End Time"
+          value="<%= event.end_time %>"
+        />
       </div>
     </div>
     <!-- Event types  -->
     <div class="mb-3">
-      <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
+      <div
+        class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
+      >
         <% type1s.forEach((type1) => { %>
-          <div class="eventType">
-            <input type="radio" class="event_type1s" name="event_type1s" value="<%= type1.id %>" onclick="toggle_location()">
-            <label for="event_type2s"><%= type1.name %></label>
-          </div>
+        <div class="eventType">
+          <input
+            type="radio"
+            class="event_type1s"
+            name="event_type1s"
+            value="<%= type1.id %>"
+            onclick="toggle_location()"
+          />
+          <label for="event_type2s"><%= type1.name %></label>
+        </div>
         <% }) %>
-      </div> 
-      <div class="container-fluid d-flex flex-row justify-content-evenly align-items-center">
+      </div>
+      <div
+        class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
+      >
         <% type2s.forEach((type2) => { %>
-          <div class="eventType">
-            <input type="radio" class="event_type2s" name="event_type2s" value="<%= type2.id %>">
-            <label for="event_type1s"><%= type2.name %></label>
-          </div>
+        <div class="eventType">
+          <input
+            type="radio"
+            class="event_type2s"
+            name="event_type2s"
+            value="<%= type2.id %>"
+          />
+          <label for="event_type1s"><%= type2.name %></label>
+        </div>
         <% }) %>
       </div>
     </div>
     <!-- External Event Link  -->
     <div class="mb-3">
-      <input type="url" name="event_link" id="event_link"
-       placeholder="External Event Link: https://example.com"
-       pattern="https://.*" size="30"
-       class="form-control" value="<%= event.event_link %>">
+      <input
+        type="url"
+        name="event_link"
+        id="event_link"
+        placeholder="External Event Link: https://example.com"
+        pattern="https://.*"
+        size="30"
+        class="form-control"
+        value="<%= event.event_link %>"
+      />
     </div>
     <!-- Location  -->
     <div class="mb-3" id="location">
-      <input type="text" name="event_location" id="searchInput" class="form-control" value="<%= event.event_location %>"/>
-      <input id="address" name="address" value="" type="hidden" placeholder="" class="form-control"/>
+      <input
+        type="text"
+        name="event_location"
+        id="searchInput"
+        class="form-control"
+        value="<%= event.event_location %>"
+      />
+      <input
+        id="address"
+        name="address"
+        value=""
+        type="hidden"
+        placeholder=""
+        class="form-control"
+      />
     </div>
     <!-- Description  -->
     <div class="mb-3">
@@ -84,8 +130,9 @@
         id="description"
         placeholder="description"
         name="description"
-        style="height: 100px;"
-      ><%= event.description %>
+        style="height: 100px"
+      >
+<%= event.description %>
       </textarea>
     </div>
     <div class="mb-3 d-flex flex-column align-items-center">
@@ -114,23 +161,23 @@
   // Input start Date, set today as default date
   const inputStartDate = document.getElementById("start_date");
   inputStartDate.min = new Date().toISOString().split("T")[0];
-  inputStartDate.valueAsDate =  new Date();
+  inputStartDate.valueAsDate = new Date();
   const inputEndDate = document.getElementById("end_date");
   inputEndDate.valueAsDate = new Date();
 
   // Show/Hide location div
-  const locationDiv = document.getElementById('location');
+  const locationDiv = document.getElementById("location");
   const event_type1s = document.querySelectorAll(".event_type1s");
   event_type1s[0].checked = "true";
   const event_type2s = document.querySelectorAll(".event_type2s");
   event_type2s[0].checked = "true";
   const toggle_location = () => {
-      if(event_type1s[1].checked){
-        locationDiv.style.display = "none";
-      } else {
-        locationDiv.style.display = "block";
-      }
-  }
+    if (event_type1s[1].checked) {
+      locationDiv.style.display = "none";
+    } else {
+      locationDiv.style.display = "block";
+    }
+  };
 </script>
-  </body>
-</html>
+
+<%- include('./partials/eventsFooter') %>

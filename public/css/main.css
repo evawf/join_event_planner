@@ -58,7 +58,7 @@ form {
   display: flex;
   justify-content: end;
   /* align-items: center; */
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 
 .container-fluid .card {

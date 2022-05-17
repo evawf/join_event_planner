@@ -281,7 +281,49 @@ const editEvent = async (req, res) => {
   }
 };
 
-const updateEvent = async (req, res) => {};
+const updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let location;
+    if (req.body.event_location) {
+      location = req.body.event_location;
+    } else {
+      location = "Online";
+    }
+    await pool.query(
+      "UPDATE events SET name=$1, start_date=$2, start_time=$3, end_date=$4, end_time=$5, event_link=$6, event_location=$7, description=$8, owner_id=$9 WHERE id=$10",
+      [
+        req.body.event_name.trim(),
+        req.body.start_date,
+        req.body.start_time,
+        req.body.end_date,
+        req.body.end_time,
+        req.body.event_link,
+        location,
+        req.body.description.trim(),
+        req.cookies.userId,
+        id,
+      ]
+    );
+    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
+      id,
+    ]);
+    const userId = req.cookies.userId;
+    const ownerId = eventData.rows[0].owner_id;
+    const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      ownerId,
+    ]);
+    res.render("event", {
+      event: eventData.rows[0],
+      userId: userId,
+      owner: ownerData.rows[0],
+    });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
 
 /***************************************************************
  Middleware for Login check
@@ -352,7 +394,7 @@ app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
 app.get("/event/:id", isLoggedIn, displayEventInfo);
 app.get("/event/:id/edit", isLoggedIn, editEvent);
-app.post("/event/:id/edit", isLoggedIn, updateEvent);
+app.put("/event/:id/edit", isLoggedIn, updateEvent);
 // app.delete("/event/:id", isLoggedIn, deleteEvent)
 
 app.listen(PORT, () => {
