@@ -193,9 +193,9 @@ const createEvent = async (req, res) => {
 
 const postEvent = async (req, res) => {
   try {
-    let location = [];
+    let location;
     if (req.body.event_location) {
-      location = [req.body.event_location];
+      location = req.body.event_location;
     } else {
       location = "Online";
     }
@@ -253,6 +253,35 @@ const displayEventInfo = async (req, res) => {
     return;
   }
 };
+
+const editEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
+      id,
+    ]);
+    const type1sData = await pool.query("SELECT * FROM type1s");
+    const type2sData = await pool.query("SELECT * FROM type2s");
+    const userId = req.cookies.userId;
+    const ownerId = eventData.rows[0].owner_id;
+    if (Number(userId) === Number(ownerId)) {
+      res.render("editEvent", {
+        event: eventData.rows[0],
+        type1s: type1sData.rows,
+        type2s: type2sData.rows,
+      });
+    } else {
+      res.status(404).send("Sorry, only event owner can edit this page!");
+      return;
+    }
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
+
+const updateEvent = async (req, res) => {};
 
 /***************************************************************
  Middleware for Login check
@@ -322,8 +351,8 @@ app.get("/myEvents", isLoggedIn, showMyEvents);
 app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
 app.get("/event/:id", isLoggedIn, displayEventInfo);
-// app.get("/event/:id/edit", isLoggedIn, editEvent);
-// app.post("/event/:id/edit", isLoggedIn, updateEvent);
+app.get("/event/:id/edit", isLoggedIn, editEvent);
+app.post("/event/:id/edit", isLoggedIn, updateEvent);
 // app.delete("/event/:id", isLoggedIn, deleteEvent)
 
 app.listen(PORT, () => {
