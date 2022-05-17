@@ -290,6 +290,7 @@ const updateEvent = async (req, res) => {
     } else {
       location = "Online";
     }
+    // Update event table
     await pool.query(
       "UPDATE events SET name=$1, start_date=$2, start_time=$3, end_date=$4, end_time=$5, event_link=$6, event_location=$7, description=$8, owner_id=$9 WHERE id=$10",
       [
@@ -308,6 +309,15 @@ const updateEvent = async (req, res) => {
     const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
       id,
     ]);
+    // Update event_types table
+    const event_id = eventData.rows[0].id;
+    const type1_id = req.body.event_type1s;
+    const type2_id = req.body.event_type2s;
+    await pool.query(
+      "UPDATE event_types SET type1_id=$1, type2_id=$2 WHERE event_id=$3",
+      [type1_id, type2_id, event_id]
+    );
+
     const userId = req.cookies.userId;
     const ownerId = eventData.rows[0].owner_id;
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
@@ -323,6 +333,10 @@ const updateEvent = async (req, res) => {
     res.status(404).send("Sorry, event editting is not working!");
     return;
   }
+};
+
+const deleteEvent = async (req, res) => {
+  res.send("deleted event");
 };
 
 /***************************************************************
@@ -395,7 +409,7 @@ app.post("/newEvent", isLoggedIn, postEvent);
 app.get("/event/:id", isLoggedIn, displayEventInfo);
 app.get("/event/:id/edit", isLoggedIn, editEvent);
 app.put("/event/:id/edit", isLoggedIn, updateEvent);
-// app.delete("/event/:id", isLoggedIn, deleteEvent)
+app.delete("/event/:id", isLoggedIn, deleteEvent);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);
