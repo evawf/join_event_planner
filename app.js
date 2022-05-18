@@ -20,6 +20,7 @@ const app = express();
 const { Pool } = pg;
 const PORT = process.env.PORT || 8080;
 const SALT = process.env.MY_SALT;
+const PLACE_KEY = process.env.PLACE_API_KEY;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pgConnectionConfigs = {
@@ -70,7 +71,6 @@ const postUserAccount = async (req, res) => {
       req.body.email,
       hashedPassword,
     ];
-    console.log(values);
     await pool.query(
       "INSERT INTO users (first_name, last_name, email, hashed_password) VALUES ($1, $2, $3, $4)",
       values
@@ -183,9 +183,11 @@ const createEvent = async (req, res) => {
   try {
     const type1sData = await pool.query("SELECT * FROM type1s");
     const type2sData = await pool.query("SELECT * FROM type2s");
+    console.log(PLACE_KEY);
     res.render("newEvent", {
       type1s: type1sData.rows,
       type2s: type2sData.rows,
+      place_key: PLACE_KEY,
     });
   } catch (err) {
     console.log("Error message:", err);
