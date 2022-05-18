@@ -58,33 +58,38 @@
       <div
         class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
       >
-        <% type1s.forEach((type1) => { %>
         <div class="eventType">
           <input
             type="radio"
-            class="event_type1s"
-            name="event_type1s"
-            value="<%= type1.id %>"
+            class="live"
+            name="live"
+            value="1"
             onclick="toggle_location()"
           />
-          <label for="event_type2s"><%= type1.name %></label>
+          <label for="live">In Person</label>
         </div>
-        <% }) %>
+        <div class="eventType">
+          <input
+            type="radio"
+            class="live"
+            name="live"
+            value="0"
+            onclick="toggle_location()"
+          />
+          <label for="live">Online</label>
+        </div>
       </div>
       <div
         class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
       >
-        <% type2s.forEach((type2) => { %>
         <div class="eventType">
-          <input
-            type="radio"
-            class="event_type2s"
-            name="event_type2s"
-            value="<%= type2.id %>"
-          />
-          <label for="event_type1s"><%= type2.name %></label>
+          <input type="radio" class="public" name="public" value="0" />
+          <label for="public">Private</label>
         </div>
-        <% }) %>
+        <div class="eventType">
+          <input type="radio" class="public" name="public" value="1" />
+          <label for="public">Public</label>
+        </div>
       </div>
     </div>
     <!-- External Event Link  -->
@@ -160,12 +165,12 @@ Description
 
   // Show/Hide location div
   const locationDiv = document.getElementById("location");
-  const event_type1s = document.querySelectorAll(".event_type1s");
-  event_type1s[0].checked = "true";
-  const event_type2s = document.querySelectorAll(".event_type2s");
-  event_type2s[0].checked = "true";
+  const public = document.querySelectorAll(".public");
+  public[0].checked = "true";
+  const live = document.querySelectorAll(".live");
+  live[0].checked = "true";
   const toggle_location = () => {
-    if (event_type1s[1].checked) {
+    if (live[1].checked) {
       locationDiv.style.display = "none";
     } else {
       locationDiv.style.display = "block";

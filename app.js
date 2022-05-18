@@ -73,6 +73,7 @@ const postUserAccount = async (req, res) => {
       req.body.email,
       hashedPassword,
     ];
+    console.log(values);
     await pool.query(
       "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
       values
@@ -153,7 +154,7 @@ const showAllEvents = async (req, res) => {
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
     // console.log(myEventsData.rows);
-    console.log(moment(myEventsData.rows[0].start_date)); // return how many days from today
+    // console.log(moment(myEventsData.rows[0].start_date)); // return how many days from today
 
     // Events I was invited - Green - To Be Added Later
     res.render("events", {
@@ -217,19 +218,21 @@ const postEvent = async (req, res) => {
       location,
       req.body.description.trim(),
       req.cookies.userId,
+      req.body.live,
+      req.body.public,
     ];
     // console.log(data);
     const eventData = await pool.query(
-      "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING * ",
+      "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id,live,public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
       data
     );
-    const event_id = eventData.rows[0].id;
-    const type1_id = req.body.event_type1s;
-    const type2_id = req.body.event_type2s;
-    await pool.query(
-      "INSERT INTO event_types (event_id, type1_id, type2_id) VALUES ($1, $2, $3) RETURNING * ",
-      [event_id, type1_id, type2_id]
-    );
+    // const event_id = eventData.rows[0].id;
+    // const type1_id = req.body.event_type1s;
+    // const type2_id = req.body.event_type2s;
+    // await pool.query(
+    //   "INSERT INTO event_types (event_id, type1_id, type2_id) VALUES ($1, $2, $3) RETURNING * ",
+    //   [event_id, type1_id, type2_id]
+    // );
     res.redirect("/events");
   } catch (err) {
     console.log("Error message:", err);
@@ -249,10 +252,21 @@ const displayEventInfo = async (req, res) => {
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
       ownerId,
     ]);
+    const commentData = await pool.query(
+      `
+      SELECT c.created_at, c.comment, u.email
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      WHERE event_id=$1
+      `,
+      [id]
+    );
+
     res.render("event", {
       event: eventData.rows[0],
       userId: userId,
       owner: ownerData.rows[0],
+      comments: commentData.rows,
     });
   } catch (err) {
     console.log("Error message:", err);
