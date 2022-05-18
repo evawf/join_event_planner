@@ -9,6 +9,7 @@
         <h5 class="my-0"><%= event.name %></h5>
       </div>
       <hr />
+      <!-- Event details  -->
       <div class="card-content">
         <p class="card-text my-1">
           Start Date & Time: <%= event.start_time %> <%=
@@ -22,9 +23,24 @@
         <hr />
         <p class="card-text my-1">Description: <%= event.description %></p>
         <hr />
-        <p class="card-text my-1">
-          Host: <%= owner.first_name %> <%= owner.last_name %>
-        </p>
+        <!-- Event owner  -->
+        <div>
+          <p class="card-text my-1">
+            Host: <%= owner.first_name %> <%= owner.last_name %>
+          </p>
+          <!-- Who will join the event  -->
+          <p>Joining:</p>
+        </div>
+        <hr />
+        <div class="container-fluid d-flex flex-row justify-content-around">
+          <button class="btn border-0 py-0 my-0 px-0" id="commentBtn">
+            <i class="fa-solid fa-comment"></i> Comment
+          </button>
+
+          <button class="btn border-0 like" id="likeBtn">
+            <i class="fa-solid fa-thumbs-up"></i> Like
+          </button>
+        </div>
       </div>
     </div>
     <!-- Only event owner can edit or delete event  -->
@@ -44,7 +60,22 @@
     <% } else { %>
     <!-- users can choose to join or ignore  -->
     <div class="card-footer d-flex flex-row">
-      <a href="/myEvents" class="btn btn-success">Join</a>
+      <form
+        action="/event/<%= event.id %>/comments"
+        method="POST"
+        class="border-0 py-0 my-0"
+      >
+        <input type="submit" value="Join" class="btn btn-success mx-5" />
+      </form>
+      <form
+        action="/event/<%= event.id %>/comments"
+        method="POST"
+        class="border-0 py-0 my-0"
+      >
+        <input type="submit" value="Pass" class="btn btn-warning mx-5" />
+      </form>
+
+      <!-- <a href="/" class="btn btn-success">Join</a> -->
     </div>
     <% } %>
   </div>

@@ -104,3 +104,11 @@ form {
   transition: 0.5s ease-in-out;
   display: none;
 }
+
+#commentBtn:hover {
+  background-color: transparent;
+}
+
+#likeBtn:hover {
+  background-color: transparent;
+}
