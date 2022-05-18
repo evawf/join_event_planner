@@ -112,3 +112,12 @@ form {
 #likeBtn:hover {
   background-color: transparent;
 }
+
+#avatar {
+  color: gray;
+}
+
+#about_me {
+  color: gray;
+  height: 80px;
+}

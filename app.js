@@ -8,7 +8,6 @@ import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import moment from "moment";
-// import { client_encoding } from "pg/lib/defaults";
 
 if (process.env.ENV !== "production") {
   dotenv.config();
@@ -62,17 +61,20 @@ const createUserAccount = async (req, res) => {
 
 const postUserAccount = async (req, res) => {
   try {
+    console.log(req.file);
     const shaObj = new jsSHA("SHA-512", "TEXT", { encoding: "UTF8" });
     shaObj.update(req.body.password);
     const hashedPassword = shaObj.getHash("HEX");
     const values = [
       req.body.first_name,
       req.body.last_name,
+      req.file.filename,
+      req.body.about_me,
       req.body.email,
       hashedPassword,
     ];
     await pool.query(
-      "INSERT INTO users (first_name, last_name, email, hashed_password) VALUES ($1, $2, $3, $4)",
+      "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
       values
     );
     res.redirect("/login");
@@ -411,7 +413,7 @@ app.get("/", displayHomepage);
 
 // Sign up and Log in/out routes
 app.get("/signup", createUserAccount);
-app.post("/signup", postUserAccount);
+app.post("/signup", multerUpload.single("avatar"), postUserAccount);
 app.get("/login", renderUserLogin);
 app.post("/login", authUserLogin);
 app.get("/logout", logoutUser);

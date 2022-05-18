@@ -3,7 +3,7 @@
   class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">Create Account</h4>
-  <form action="/signup" method="POST">
+  <form action="/signup" method="POST" enctype="multipart/form-data">
     <!-- First name -->
     <div class="mb-3">
       <input
@@ -25,6 +25,22 @@
         class="form-control"
         required
       />
+    </div>
+    <!-- Avatar  -->
+    <div class="mb-3">
+      <input
+        type="file"
+        name="avatar"
+        id="avatar"
+        class="form-control"
+        accept="image/png, image/jpeg"
+      />
+    </div>
+    <!-- About Me  -->
+    <div class="mb-3">
+      <textarea name="about_me" id="about_me" class="form-control">
+About me
+      </textarea>
     </div>
     <!-- Email -->
     <div class="mb-3">
@@ -49,7 +65,6 @@
       />
     </div>
     <!-- Submit -->
-    <!-- <input type="submit" value="Submit" /> -->
     <div class="mb-3 d-flex flex-column align-items-center">
       <button type="submit" class="btn btn-primary form-control">
         SIGN UP
