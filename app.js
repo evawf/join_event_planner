@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+import moment from "moment";
 // import { client_encoding } from "pg/lib/defaults";
 
 if (process.env.ENV !== "production") {
@@ -150,6 +151,8 @@ const showAllEvents = async (req, res) => {
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
     // console.log(myEventsData.rows);
+    console.log(moment(myEventsData.rows[0].start_date)); // return how many days from today
+
     // Events I was invited - Green - To Be Added Later
     res.render("events", {
       publicEvents: publicEventsData.rows,
@@ -336,7 +339,17 @@ const updateEvent = async (req, res) => {
 };
 
 const deleteEvent = async (req, res) => {
-  res.send("deleted event");
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM events WHERE id=$1", [id]);
+    await pool.query("DELETE FROM event_types WHERE event_id=$1", [id]);
+    // To delete event from other tables where there is a event_id
+    res.redirect("/myEvents");
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
 };
 
 /***************************************************************
@@ -410,6 +423,8 @@ app.get("/event/:id", isLoggedIn, displayEventInfo);
 app.get("/event/:id/edit", isLoggedIn, editEvent);
 app.put("/event/:id/edit", isLoggedIn, updateEvent);
 app.delete("/event/:id", isLoggedIn, deleteEvent);
+
+// User routes
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);

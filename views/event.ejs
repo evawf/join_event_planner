@@ -27,14 +27,22 @@
         </p>
       </div>
     </div>
+    <!-- Only event owner can edit or delete event  -->
     <% if(currentUser.id === event.owner_id) { %>
     <div class="card-footer d-flex flex-row justify-content-center">
-      <a href="/event/<%= event.id %>/edit" class="btn btn-warning mx-5"
-        >Edit</a
+      <form action="/event/<%= event.id %>/edit" class="border-0 py-0 my-0">
+        <input type="submit" value="Edit" class="btn btn-warning mx-5" />
+      </form>
+      <form
+        action="/event/<%= event.id %>?_method=DELETE"
+        method="POST"
+        class="border-0 py-0 my-0"
       >
-      <a href="/event/<%= event.id %>" class="btn btn-danger">Delete</a>
+        <input type="submit" value="Delete" class="btn btn-danger" />
+      </form>
     </div>
     <% } else { %>
+    <!-- users can choose to join or ignore  -->
     <div class="card-footer d-flex flex-row">
       <a href="/myEvents" class="btn btn-success">Join</a>
     </div>
