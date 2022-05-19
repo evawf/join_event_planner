@@ -341,7 +341,7 @@ const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query("DELETE FROM events WHERE id=$1", [id]);
-    await pool.query("DELETE FROM event_types WHERE event_id=$1", [id]);
+    await pool.query("DELETE FROM user_events WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
     // To delete event from other tables where there is a event_id, to be added

@@ -1,12 +1,13 @@
-<footer class="footer mt-auto py-3 bg-light fixed-bottom bg-light">
-  <div class="container d-flex justify-content-between align-items-center">
-    <a href="/myEvents" class="btn btn-info mx-2">My Events</a>
-    <a href="/events" class="btn btn-info mx-2">All Events</a>
-      <!-- <a href="/newEvent" class="btn btn-info mx-2">Create Event</a> -->
+<footer class="footer fixed-bottom ">
+  <div class="container d-flex justify-content-between bg-dark py-1 my-0 align-items-center">
     <% if(!loggedIn) { %>
-      <a href="/login" class="btn btn-info">Login</a>
+      <a href="/login" class="my-4" ><i class="fa-solid fa-circle-user fa-3x homeIcons"></i></a>
     <% } else { %>
-      <a href="/logout" class="btn btn-info">Logout</a>
+      <!-- <div class="d-flex justify-content-between align-items-center"> -->
+        <a href="/myEvents" class="my-4"><i class="fa-solid fa-heart fa-2x homeIcons"></i><br></a>
+        <a href="/events" class="my-4"><i class="fa-solid fa-calendar-days fa-2x homeIcons"></i><br></a>
+        <a href="/logout" class="my-4"><i class="fa-solid fa-right-from-bracket fa-2x homeIcons"></i><br></a>
+      <!-- </div> -->
     <% } %>
   </div>
 </footer>
