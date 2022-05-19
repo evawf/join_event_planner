@@ -356,8 +356,6 @@ const deleteEvent = async (req, res) => {
 const postComments = async (req, res) => {
   try {
     const { id } = req.params;
-    const commentData = [id, req.body.comment, req.cookies.userId];
-    console.log(commentData);
     await pool.query(
       "INSERT INTO comments (event_id, comment, user_id) VALUES ($1, $2, $3)",
       [id, req.body.comment, req.cookies.userId]

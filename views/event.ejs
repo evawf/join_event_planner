@@ -36,14 +36,24 @@
               action="/event/<%= event.id %>/edit"
               class="border-0 py-0 my-0"
             >
-              <input type="submit" value="Edit" class="btn btn-warning mx-5" />
+              <input
+                type="submit"
+                value="Edit"
+                class="btn btn-success btn-sm mx-5"
+                style="width: 60px"
+              />
             </form>
             <form
               action="/event/<%= event.id %>?_method=DELETE"
               method="POST"
               class="border-0 py-0 my-0"
             >
-              <input type="submit" value="Delete" class="btn btn-danger" />
+              <input
+                type="submit"
+                value="Delete"
+                class="btn btn-warning btn-sm mx-5"
+                style="width: 60px"
+              />
             </form>
           </div>
           <% } else { %>
@@ -58,7 +68,8 @@
                 type="submit"
                 name="isJoin"
                 value="1"
-                class="btn btn-success mx-5"
+                class="btn btn-success btn-sm mx-5"
+                style="width: 60px"
               >
                 Join
               </button>
@@ -66,61 +77,60 @@
                 type="submit"
                 name="isJoin"
                 value="0"
-                class="btn btn-warning mx-5"
+                class="btn btn-warning btn-sm mx-5"
+                style="width: 60px"
               >
                 Pass
               </button>
             </form>
           </div>
           <% } %>
-          <hr />
-          <!-- Comments and Likes Button  -->
-          <div class="container-fluid d-flex flex-row justify-content-around">
-            <!-- Button trigger modal to add comment-->
-            <button
-              type="button"
-              class="btn border-0 py-0 my-0 px-0"
-              id="commentBtn"
-              data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop"
-            >
-              <i class="fa-solid fa-comment"></i>Comment
-            </button>
-
-            <form
-              action="/event/<%= event.id %>/likes"
-              method="POST"
-              class="border-0 py-0 my-0"
-            >
-              <button class="btn border-0 like" id="likeBtn">
-                <%= likes.length %> Like <i class="fa-solid fa-thumbs-up"></i>
-              </button>
-            </form>
-          </div>
-          <hr />
           <!-- comments  -->
-          <div>
-            <p><%= comments.length %> Comments:</p>
+          <div
+            id="showCommentsBtn"
+            class="btn btn-info btn-sm bg-light text-center w-100 mt-3"
+            onclick="toggleShowComments()"
+          >
+            Show Comments
+          </div>
+          <div id="commentsDiv">
+            <!-- <p><%= comments.length %> Comments:</p> -->
             <% comments.forEach(c => { %>
             <span><%= c.first_name %>: <%= c.comment %></span>
             <br />
             <span><%= c.created_at %></span>
             <hr />
             <% }) %>
-            <form
-              action="/event/<%= event.id %>/comments"
-              method="POST"
-              class="border-0 py-0 my-0"
+          </div>
+          <!-- Comments and Likes Button  -->
+          <div class="container-fluid d-flex flex-row justify-content-center">
+            <!-- Button trigger modal to add comment-->
+            <div
+              class="d-flex flex-row justify-content-center align-items-center"
             >
-              <textarea
-                name="comment"
-                id="comment"
-                class="form-control"
-              ></textarea>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <p class="my-0 py-0 text-center"><%= comments.length %></p>
+              <button
+                type="button"
+                class="btn border-0 py-0 my-0 px-0 mx-1"
+                id="commentBtn"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+              >
+                Comments
+              </button>
+              <i class="fa-solid fa-comment"></i>
+            </div>
+
+            <form
+              action="/event/<%= event.id %>/likes"
+              method="POST"
+              class="border-0 py-0 my-0 text-center"
+            >
+              <button class="btn border-0 like" id="likeBtn">
+                <%= likes.length %> Likes <i class="fa-solid fa-thumbs-up"></i>
+              </button>
             </form>
           </div>
-          <hr />
           <!-- Modal  -->
           <div
             class="modal fade"
@@ -135,7 +145,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="staticBackdropLabel">
-                    Modal title
+                    Add Comment
                   </h5>
                   <button
                     type="button"
@@ -144,35 +154,34 @@
                     aria-label="Close"
                   ></button>
                 </div>
-                <div class="modal-body">...</div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
+                <div class="modal-body">
+                  <form
+                    action="/event/<%= event.id %>/comments"
+                    method="POST"
+                    class="border-0 py-0 my-0"
                   >
-                    Close
-                  </button>
-                  <button type="button" class="btn btn-primary">
-                    Understood
-                  </button>
+                    <textarea
+                      name="comment"
+                      id="comment"
+                      class="form-control"
+                    ></textarea>
+                    <button type="submit" class="btn btn-primary">
+                      Submit
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
           <!-- Modal  -->
-          <!-- Likes  -->
-          <div>
-            <p>Likes</p>
-          </div>
         </div>
       </div>
     </div>
     <!-- Event owner  -->
-    <div class="card card text-body my-1 bg-light bg-gradient">
+    <div class="card card text-body my-1 bg-light bg-gradient text-center">
       <div class="card-body overflow-auto">
         <p class="card-text my-1">
-          Hosting:
+          Hosting
           <br />
           <img
             src="/<%= owner.avatar %>"
@@ -182,7 +191,7 @@
         </p>
         <hr />
         <!-- Who will join the event  -->
-        <p>Joining:</p>
+        <p>Attendees</p>
         <% user_avatars.forEach(user_avatar => { %>
         <img
           src="/<%= user_avatar.avatar %>"
@@ -193,6 +202,24 @@
       </div>
     </div>
   </div>
-
-  <%- include('./partials/footer') %>
 </div>
+<%- include('./partials/footer') %>
+
+<script>
+  const showCommentsBtn = document.getElementById("showCommentsBtn");
+  const commentsDiv = document.getElementById("commentsDiv");
+  const toggleShowComments = () => {
+    console.log("clicked");
+    console.log(commentsDiv.style.display);
+    if (
+      commentsDiv.style.display === "none" ||
+      commentsDiv.style.display === ""
+    ) {
+      commentsDiv.style.display = "block";
+      showCommentsBtn.innerText = "Hide Comments";
+    } else {
+      commentsDiv.style.display = "none";
+      showCommentsBtn.innerText = "Show Comments";
+    }
+  };
+</script>
