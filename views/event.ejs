@@ -1,5 +1,4 @@
-<%- include('./partials/header') %>
-<%- include('./partials/navbar') %>
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
 
 <div
   class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
@@ -77,7 +76,14 @@
           <hr />
           <!-- Comments and Likes Button  -->
           <div class="container-fluid d-flex flex-row justify-content-around">
-            <button class="btn border-0 py-0 my-0 px-0" id="commentBtn">
+            <!-- Button trigger modal to add comment-->
+            <button
+              type="button"
+              class="btn border-0 py-0 my-0 px-0"
+              id="commentBtn"
+              data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop"
+            >
               <i class="fa-solid fa-comment"></i>Comment
             </button>
 
@@ -115,6 +121,46 @@
             </form>
           </div>
           <hr />
+          <!-- Modal  -->
+          <div
+            class="modal fade"
+            id="staticBackdrop"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel">
+                    Modal title
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">...</div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="button" class="btn btn-primary">
+                    Understood
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Modal  -->
           <!-- Likes  -->
           <div>
             <p>Likes</p>
