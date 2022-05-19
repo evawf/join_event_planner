@@ -146,8 +146,9 @@ const showAllEvents = async (req, res) => {
     // Public Events - Blue
     const userId = req.cookies.userId;
     const publicEventsData = await pool.query(
-      `SELECT * FROM events INNER JOIN event_types ON events.id=event_types.event_id WHERE event_types.type2_id=2 AND events.owner_id!=${userId}`
+      `SELECT * FROM events WHERE events.public=true AND events.owner_id!=${userId}`
     );
+
     // console.log(publicEventsData.rows);
     // Events I created - Pink
     const myEventsData = await pool.query(
@@ -226,13 +227,6 @@ const postEvent = async (req, res) => {
       "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id,live,public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
       data
     );
-    // const event_id = eventData.rows[0].id;
-    // const type1_id = req.body.event_type1s;
-    // const type2_id = req.body.event_type2s;
-    // await pool.query(
-    //   "INSERT INTO event_types (event_id, type1_id, type2_id) VALUES ($1, $2, $3) RETURNING * ",
-    //   [event_id, type1_id, type2_id]
-    // );
     res.redirect("/events");
   } catch (err) {
     console.log("Error message:", err);
@@ -254,9 +248,18 @@ const displayEventInfo = async (req, res) => {
     ]);
     const commentData = await pool.query(
       `
-      SELECT c.created_at, c.comment, u.email
+      SELECT c.created_at, c.comment, u.first_name
       FROM comments c
       JOIN users u ON c.user_id = u.id
+      WHERE event_id=$1
+      `,
+      [id]
+    );
+    const userJoinData = await pool.query(
+      `
+      SELECT j.isJoin, u.avatar
+      FROM user_events j
+      JOIN users u ON j.user_id = u.id AND j.isJoin=true
       WHERE event_id=$1
       `,
       [id]
@@ -267,6 +270,7 @@ const displayEventInfo = async (req, res) => {
       userId: userId,
       owner: ownerData.rows[0],
       comments: commentData.rows,
+      user_avatars: userJoinData.rows,
     });
   } catch (err) {
     console.log("Error message:", err);
@@ -281,15 +285,11 @@ const editEvent = async (req, res) => {
     const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
       id,
     ]);
-    const type1sData = await pool.query("SELECT * FROM type1s");
-    const type2sData = await pool.query("SELECT * FROM type2s");
     const userId = req.cookies.userId;
     const ownerId = eventData.rows[0].owner_id;
     if (Number(userId) === Number(ownerId)) {
       res.render("editEvent", {
         event: eventData.rows[0],
-        type1s: type1sData.rows,
-        type2s: type2sData.rows,
       });
     } else {
       res.status(404).send("Sorry, only event owner can edit this page!");
@@ -313,7 +313,7 @@ const updateEvent = async (req, res) => {
     }
     // Update event table
     await pool.query(
-      "UPDATE events SET name=$1, start_date=$2, start_time=$3, end_date=$4, end_time=$5, event_link=$6, event_location=$7, description=$8, owner_id=$9 WHERE id=$10",
+      "UPDATE events SET name=$1, start_date=$2, start_time=$3, end_date=$4, end_time=$5, event_link=$6, event_location=$7, description=$8, owner_id=$9, live=$10, public=$11 WHERE id=$12",
       [
         req.body.event_name.trim(),
         req.body.start_date,
@@ -324,31 +324,12 @@ const updateEvent = async (req, res) => {
         location,
         req.body.description.trim(),
         req.cookies.userId,
+        req.body.live,
+        req.body.public,
         id,
       ]
     );
-    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
-      id,
-    ]);
-    // Update event_types table
-    const event_id = eventData.rows[0].id;
-    const type1_id = req.body.event_type1s;
-    const type2_id = req.body.event_type2s;
-    await pool.query(
-      "UPDATE event_types SET type1_id=$1, type2_id=$2 WHERE event_id=$3",
-      [type1_id, type2_id, event_id]
-    );
-
-    const userId = req.cookies.userId;
-    const ownerId = eventData.rows[0].owner_id;
-    const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      ownerId,
-    ]);
-    res.render("event", {
-      event: eventData.rows[0],
-      userId: userId,
-      owner: ownerData.rows[0],
-    });
+    res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, event editting is not working!");
@@ -361,8 +342,52 @@ const deleteEvent = async (req, res) => {
     const { id } = req.params;
     await pool.query("DELETE FROM events WHERE id=$1", [id]);
     await pool.query("DELETE FROM event_types WHERE event_id=$1", [id]);
-    // To delete event from other tables where there is a event_id
+    await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
+    // To delete event from other tables where there is a event_id, to be added
     res.redirect("/myEvents");
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
+
+const postComments = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const commentData = [id, req.body.comment, req.cookies.userId];
+    console.log(commentData);
+    await pool.query(
+      "INSERT INTO comments (event_id, comment, user_id) VALUES ($1, $2, $3)",
+      [id, req.body.comment, req.cookies.userId]
+    );
+
+    // res.send("comments sent");
+    res.redirect(`/event/${id}`);
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
+
+const postJoin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let isJoin;
+    if (req.body.isJoin === "1") {
+      isJoin = true;
+    } else {
+      isJoin = false;
+    }
+    const joinData = [isJoin, id, req.cookies.userId];
+    console.log(joinData);
+    await pool.query(
+      "INSERT INTO  user_events (isJoin, event_id, user_id) VALUES ($1, $2, $3)",
+      joinData
+    );
+
+    res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, event editting is not working!");
@@ -441,6 +466,12 @@ app.get("/event/:id", isLoggedIn, displayEventInfo);
 app.get("/event/:id/edit", isLoggedIn, editEvent);
 app.put("/event/:id/edit", isLoggedIn, updateEvent);
 app.delete("/event/:id", isLoggedIn, deleteEvent);
+
+// Comments route
+app.post("/event/:id/comments", isLoggedIn, postComments);
+
+// Join route
+app.post("/event/:id/join", isLoggedIn, postJoin);
 
 // User routes
 
