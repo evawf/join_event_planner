@@ -185,12 +185,7 @@ const showMyEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
   try {
-    const type1sData = await pool.query("SELECT * FROM type1s");
-    const type2sData = await pool.query("SELECT * FROM type2s");
-    console.log(PLACE_KEY);
     res.render("newEvent", {
-      type1s: type1sData.rows,
-      type2s: type2sData.rows,
       place_key: PLACE_KEY,
     });
   } catch (err) {
@@ -222,7 +217,6 @@ const postEvent = async (req, res) => {
       req.body.live,
       req.body.public,
     ];
-    // console.log(data);
     const eventData = await pool.query(
       "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id,live,public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
       data
@@ -265,12 +259,18 @@ const displayEventInfo = async (req, res) => {
       [id]
     );
 
+    const likesData = await pool.query(
+      "SELECT * FROM likes WHERE event_id=$1 AND liked=$2",
+      [id, true]
+    );
+
     res.render("event", {
       event: eventData.rows[0],
       userId: userId,
       owner: ownerData.rows[0],
       comments: commentData.rows,
       user_avatars: userJoinData.rows,
+      likes: likesData.rows,
     });
   } catch (err) {
     console.log("Error message:", err);
@@ -361,8 +361,6 @@ const postComments = async (req, res) => {
       "INSERT INTO comments (event_id, comment, user_id) VALUES ($1, $2, $3)",
       [id, req.body.comment, req.cookies.userId]
     );
-
-    // res.send("comments sent");
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
@@ -381,12 +379,45 @@ const postJoin = async (req, res) => {
       isJoin = false;
     }
     const joinData = [isJoin, id, req.cookies.userId];
-    console.log(joinData);
     await pool.query(
       "INSERT INTO  user_events (isJoin, event_id, user_id) VALUES ($1, $2, $3)",
       joinData
     );
+    res.redirect(`/event/${id}`);
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
 
+const postLikes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.cookies.userId;
+    const likesData = await pool.query(
+      "SELECT * FROM likes WHERE event_id=$1 AND user_id=$2",
+      [id, userId]
+    );
+    const isLiked = likesData.rows[0];
+    if (isLiked === undefined) {
+      const data = [true, id, userId];
+      await pool.query(
+        "INSERT INTO likes (liked, event_id, user_id) VALUES($1, $2, $3)",
+        data
+      );
+      // Toggle Liked True/False
+    } else if (isLiked.liked) {
+      await pool.query(
+        "UPDATE likes SET liked=$1 WHERE event_id=$2 AND user_id=$3",
+        [false, id, userId]
+      );
+    } else {
+      await pool.query(
+        "UPDATE likes SET liked=$1 WHERE event_id=$2 AND user_id=$3",
+        [true, id, userId]
+      );
+    }
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
@@ -472,6 +503,9 @@ app.post("/event/:id/comments", isLoggedIn, postComments);
 
 // Join route
 app.post("/event/:id/join", isLoggedIn, postJoin);
+
+// Likes route
+app.post("/event/:id/likes", isLoggedIn, postLikes);
 
 // User routes
 

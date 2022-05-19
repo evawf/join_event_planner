@@ -1,181 +1,216 @@
 <%- include('./partials/header') %>
-
-<div
-  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
->
-  <h4 class="mb-4">New Event</h4>
-  <form action="/newEvent" method="POST">
-    <!-- Event Name  -->
-    <div class="mb-3">
-      <input
-        type="text"
-        name="event_name"
-        id="event_name"
-        placeholder="Event Name *"
-        class="form-control"
-        required
-      />
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark py-0">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/events"
+      >Welcome, <%= currentUser.first_name %> !</a
+    >
+    <button
+      class="navbar-toggler py-0 px-1"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto mb-2 mb-md-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/logout">Log out</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/events">All Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/myEvents">My Events</a>
+        </li>
+      </ul>
     </div>
-    <!-- Start Date & Time  -->
-    <div class="mb-3">
-      <label for="start_date&time">Start Date and Time *</label>
-      <div>
+  </div>
+</nav>
+<div
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
+>
+  <div
+    class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
+  >
+    <h4 class="mb-4">New Event</h4>
+    <form action="/newEvent" method="POST">
+      <!-- Event Name  -->
+      <div class="mb-3">
         <input
-          type="date"
-          name="start_date"
-          id="start_date"
-          placeholder="Start Date"
-        />
-        <input
-          type="time"
-          name="start_time"
-          id="start_time"
-          placeholder="Start Time"
+          type="text"
+          name="event_name"
+          id="event_name"
+          placeholder="Event Name *"
+          class="form-control"
           required
         />
       </div>
-    </div>
-    <!-- End Date & Time  -->
-    <div class="mb-3">
-      <label for="end_date&time">End Date and Time</label>
-      <div>
+      <!-- Start Date & Time  -->
+      <div class="mb-3">
+        <label for="start_date&time">Start Date and Time *</label>
+        <div>
+          <input
+            type="date"
+            name="start_date"
+            id="start_date"
+            placeholder="Start Date"
+          />
+          <input
+            type="time"
+            name="start_time"
+            id="start_time"
+            placeholder="Start Time"
+            required
+          />
+        </div>
+      </div>
+      <!-- End Date & Time  -->
+      <div class="mb-3">
+        <label for="end_date&time">End Date and Time</label>
+        <div>
+          <input
+            type="date"
+            name="end_date"
+            id="end_date"
+            placeholder="End Date"
+          />
+          <input
+            type="time"
+            name="end_time"
+            id="end_time"
+            placeholder="End Time"
+          />
+        </div>
+      </div>
+      <!-- Event types  -->
+      <div class="mb-3">
+        <div
+          class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
+        >
+          <div class="eventType">
+            <input
+              type="radio"
+              class="live"
+              name="live"
+              value="1"
+              onclick="toggle_location()"
+            />
+            <label for="live">In Person</label>
+          </div>
+          <div class="eventType">
+            <input
+              type="radio"
+              class="live"
+              name="live"
+              value="0"
+              onclick="toggle_location()"
+            />
+            <label for="live">Online</label>
+          </div>
+        </div>
+        <div
+          class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
+        >
+          <div class="eventType">
+            <input type="radio" class="public" name="public" value="0" />
+            <label for="public">Private</label>
+          </div>
+          <div class="eventType">
+            <input type="radio" class="public" name="public" value="1" />
+            <label for="public">Public</label>
+          </div>
+        </div>
+      </div>
+      <!-- External Event Link  -->
+      <div class="mb-3">
         <input
-          type="date"
-          name="end_date"
-          id="end_date"
-          placeholder="End Date"
+          type="url"
+          name="event_link"
+          id="event_link"
+          placeholder="External Event Link: https://example.com"
+          pattern="https://.*"
+          size="30"
+          class="form-control"
+        />
+      </div>
+      <!-- Location  -->
+      <div class="mb-3" id="location">
+        <input
+          type="text"
+          name="event_location"
+          id="searchInput"
+          class="form-control"
         />
         <input
-          type="time"
-          name="end_time"
-          id="end_time"
-          placeholder="End Time"
+          id="address"
+          name="address"
+          value=""
+          type="hidden"
+          placeholder=""
+          class="form-control"
         />
       </div>
-    </div>
-    <!-- Event types  -->
-    <div class="mb-3">
-      <div
-        class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
-      >
-        <div class="eventType">
-          <input
-            type="radio"
-            class="live"
-            name="live"
-            value="1"
-            onclick="toggle_location()"
-          />
-          <label for="live">In Person</label>
-        </div>
-        <div class="eventType">
-          <input
-            type="radio"
-            class="live"
-            name="live"
-            value="0"
-            onclick="toggle_location()"
-          />
-          <label for="live">Online</label>
-        </div>
-      </div>
-      <div
-        class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
-      >
-        <div class="eventType">
-          <input type="radio" class="public" name="public" value="0" />
-          <label for="public">Private</label>
-        </div>
-        <div class="eventType">
-          <input type="radio" class="public" name="public" value="1" />
-          <label for="public">Public</label>
-        </div>
-      </div>
-    </div>
-    <!-- External Event Link  -->
-    <div class="mb-3">
-      <input
-        type="url"
-        name="event_link"
-        id="event_link"
-        placeholder="External Event Link: https://example.com"
-        pattern="https://.*"
-        size="30"
-        class="form-control"
-      />
-    </div>
-    <!-- Location  -->
-    <div class="mb-3" id="location">
-      <input
-        type="text"
-        name="event_location"
-        id="searchInput"
-        class="form-control"
-      />
-      <input
-        id="address"
-        name="address"
-        value=""
-        type="hidden"
-        placeholder=""
-        class="form-control"
-      />
-    </div>
-    <!-- Description  -->
-    <div class="mb-3">
-      <textarea
-        class="form-control"
-        id="description"
-        placeholder="description"
-        name="description"
-        style="height: 100px"
-      >
+      <!-- Description  -->
+      <div class="mb-3">
+        <textarea
+          class="form-control"
+          id="description"
+          placeholder="description"
+          name="description"
+          style="height: 100px"
+        >
 Description
-      </textarea>
-    </div>
-    <div class="mb-3 d-flex flex-column align-items-center">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-  </form>
-</div>
-<script
-  async
-  src="https://maps.googleapis.com/maps/api/js?key=<%= place_key %>&libraries=places&callback=initMap"
-></script>
+      </textarea
+        >
+      </div>
+      <div class="mb-3 d-flex flex-column align-items-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+  <script
+    async
+    src="https://maps.googleapis.com/maps/api/js?key=<%= place_key %>&libraries=places&callback=initMap"
+  ></script>
 
-<script>
-  // Autocomplete location
-  function initMap() {
-    var input = document.getElementById("searchInput");
-    var autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.addListener("place_changed", function () {
-      var place = autocomplete.getPlace();
-      document.getElementById("address").value = JSON.stringify(
-        place.address_components
-      );
-    });
-  }
-
-  // Input start Date, set today as default date
-  const inputStartDate = document.getElementById("start_date");
-  inputStartDate.min = new Date().toISOString().split("T")[0];
-  inputStartDate.valueAsDate = new Date();
-  const inputEndDate = document.getElementById("end_date");
-  inputEndDate.valueAsDate = new Date();
-
-  // Show/Hide location div
-  const locationDiv = document.getElementById("location");
-  const public = document.querySelectorAll(".public");
-  public[0].checked = "true";
-  const live = document.querySelectorAll(".live");
-  live[0].checked = "true";
-  const toggle_location = () => {
-    if (live[1].checked) {
-      locationDiv.style.display = "none";
-    } else {
-      locationDiv.style.display = "block";
+  <script>
+    // Autocomplete location
+    function initMap() {
+      var input = document.getElementById("searchInput");
+      var autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.addListener("place_changed", function () {
+        var place = autocomplete.getPlace();
+        document.getElementById("address").value = JSON.stringify(
+          place.address_components
+        );
+      });
     }
-  };
-</script>
 
-<%- include('./partials/eventsFooter') %>
+    // Input start Date, set today as default date
+    const inputStartDate = document.getElementById("start_date");
+    inputStartDate.min = new Date().toISOString().split("T")[0];
+    inputStartDate.valueAsDate = new Date();
+    const inputEndDate = document.getElementById("end_date");
+    inputEndDate.valueAsDate = new Date();
+
+    // Show/Hide location div
+    const locationDiv = document.getElementById("location");
+    const public = document.querySelectorAll(".public");
+    public[0].checked = "true";
+    const live = document.querySelectorAll(".live");
+    live[0].checked = "true";
+    const toggle_location = () => {
+      if (live[1].checked) {
+        locationDiv.style.display = "none";
+      } else {
+        locationDiv.style.display = "block";
+      }
+    };
+  </script>
+
+  <%- include('./partials/eventsFooter') %>
+</div>

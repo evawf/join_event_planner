@@ -1,133 +1,181 @@
 <%- include('./partials/header') %>
-
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark py-0">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/events"
+      >Welcome, <%= currentUser.first_name %> !</a
+    >
+    <button
+      class="navbar-toggler py-0 px-1"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto mb-2 mb-md-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/logout">Log out</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/events">All Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/myEvents">My Events</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 <div
-  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-0 py-0 pb-5 mb-4"
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
 >
-  <div class="card text-body my-1 bg-light bg-gradient">
-    <div class="card-body overflow-auto">
-      <div class="card-title d-flex justify-content-center my-0">
-        <h5 class="my-0"><%= event.name %></h5>
-      </div>
-      <hr />
-      <!-- Event details  -->
-      <div class="card-content">
-        <p class="card-text my-1">
-          Start Date & Time: <%= event.start_time %> <%=
-          event.start_date.toLocaleDateString('el-GR') %>
-        </p>
-        <p class="card-text my-1">
-          End Date & Time: <%= event.start_time %> <%=
-          event.end_date.toLocaleDateString('el-GR') %>
-        </p>
-        <p class="card-text my-1">Location: <%= event.event_location %></p>
-        <p class="card-text my-1">Link: <%= event.event_link %></p>
+  <div
+    class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-0 py-0 pb-5 mb-4"
+  >
+    <div class="card text-body my-1 bg-light bg-gradient">
+      <div class="card-body overflow-auto">
+        <div class="card-title d-flex justify-content-center my-0">
+          <h5 class="my-0"><%= event.name %></h5>
+        </div>
+        <hr />
+        <!-- Event details  -->
+        <div class="card-content">
+          <p class="card-text my-1">
+            Start Date & Time: <%= event.start_time %> <%=
+            event.start_date.toLocaleDateString('el-GR') %>
+          </p>
+          <p class="card-text my-1">
+            End Date & Time: <%= event.start_time %> <%=
+            event.end_date.toLocaleDateString('el-GR') %>
+          </p>
+          <p class="card-text my-1">Location: <%= event.event_location %></p>
+          <p class="card-text my-1">Link: <%= event.event_link %></p>
 
-        <hr />
-        <p class="card-text my-1">Description: <%= event.description %></p>
-        <hr />
-        <!-- Only event owner can edit or delete event  -->
-        <% if(currentUser.id === event.owner_id) { %>
-        <div class="d-flex flex-row justify-content-center">
-          <form action="/event/<%= event.id %>/edit" class="border-0 py-0 my-0">
-            <input type="submit" value="Edit" class="btn btn-warning mx-5" />
-          </form>
-          <form
-            action="/event/<%= event.id %>?_method=DELETE"
-            method="POST"
-            class="border-0 py-0 my-0"
-          >
-            <input type="submit" value="Delete" class="btn btn-danger" />
-          </form>
-        </div>
-        <% } else { %>
-        <!-- users can choose to join or ignore  -->
-        <div class="d-flex flex-row">
-          <form
-            action="/event/<%= event.id %>/join"
-            method="POST"
-            class="border-0 py-0 my-0"
-          >
-            <button
-              type="submit"
-              name="isJoin"
-              value="1"
-              class="btn btn-success mx-5"
-            >
-              Join
-            </button>
-            <button
-              type="submit"
-              name="isJoin"
-              value="0"
-              class="btn btn-warning mx-5"
-            >
-              Pass
-            </button>
-          </form>
-        </div>
-        <% } %>
-        <hr />
-        <!-- comments  -->
-        <div>
-          <p>Comments:</p>
-          <% comments.forEach(c => { %>
-          <span><%= c.comment %></span>
-          <br />
-          <span><%= c.created_at %></span>
-          <br />
-          <span><%= c.first_name %></span>
           <hr />
-          <% }) %>
-          <form
-            action="/event/<%= event.id %>/comments"
-            method="POST"
-            class="border-0 py-0 my-0"
-          >
-            <textarea
-              name="comment"
-              id="comment"
-              class="form-control"
-            ></textarea>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
-        </div>
-        <hr />
-        <div class="container-fluid d-flex flex-row justify-content-around">
-          <button class="btn border-0 py-0 my-0 px-0" id="commentBtn">
-            <i class="fa-solid fa-comment"></i> Comment
-          </button>
+          <p class="card-text my-1">Description: <%= event.description %></p>
+          <hr />
 
-          <button class="btn border-0 like" id="likeBtn">
-            <i class="fa-solid fa-thumbs-up"></i> Like
-          </button>
+          <!-- Only event owner can edit or delete event  -->
+          <% if(currentUser.id === event.owner_id) { %>
+          <div class="d-flex flex-row justify-content-center">
+            <form
+              action="/event/<%= event.id %>/edit"
+              class="border-0 py-0 my-0"
+            >
+              <input type="submit" value="Edit" class="btn btn-warning mx-5" />
+            </form>
+            <form
+              action="/event/<%= event.id %>?_method=DELETE"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
+              <input type="submit" value="Delete" class="btn btn-danger" />
+            </form>
+          </div>
+          <% } else { %>
+          <!-- users can choose to join or ignore  -->
+          <div class="d-flex flex-row">
+            <form
+              action="/event/<%= event.id %>/join"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
+              <button
+                type="submit"
+                name="isJoin"
+                value="1"
+                class="btn btn-success mx-5"
+              >
+                Join
+              </button>
+              <button
+                type="submit"
+                name="isJoin"
+                value="0"
+                class="btn btn-warning mx-5"
+              >
+                Pass
+              </button>
+            </form>
+          </div>
+          <% } %>
+          <hr />
+          <!-- Comments and Likes Button  -->
+          <div class="container-fluid d-flex flex-row justify-content-around">
+            <button class="btn border-0 py-0 my-0 px-0" id="commentBtn">
+              <i class="fa-solid fa-comment"></i>Comment
+            </button>
+
+            <form
+              action="/event/<%= event.id %>/likes"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
+              <button class="btn border-0 like" id="likeBtn">
+                <%= likes.length %> Like <i class="fa-solid fa-thumbs-up"></i>
+              </button>
+            </form>
+          </div>
+          <hr />
+          <!-- comments  -->
+          <div>
+            <p><%= comments.length %> Comments:</p>
+            <% comments.forEach(c => { %>
+            <span><%= c.first_name %>: <%= c.comment %></span>
+            <br />
+            <span><%= c.created_at %></span>
+            <hr />
+            <% }) %>
+            <form
+              action="/event/<%= event.id %>/comments"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
+              <textarea
+                name="comment"
+                id="comment"
+                class="form-control"
+              ></textarea>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+          <hr />
+          <!-- Likes  -->
+          <div>
+            <p>Likes</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Event owner  -->
-  <div class="card card text-body my-1 bg-light bg-gradient">
-    <div class="card-body overflow-auto">
-      <p class="card-text my-1">
-        Host:
-        <br />
+    <!-- Event owner  -->
+    <div class="card card text-body my-1 bg-light bg-gradient">
+      <div class="card-body overflow-auto">
+        <p class="card-text my-1">
+          Hosting:
+          <br />
+          <img
+            src="/<%= owner.avatar %>"
+            alt=""
+            style="width: 50px; height: auto; border-radius: 25px"
+          />
+        </p>
+        <hr />
+        <!-- Who will join the event  -->
+        <p>Joining:</p>
+        <% user_avatars.forEach(user_avatar => { %>
         <img
-          src="/<%= owner.avatar %>"
+          src="/<%= user_avatar.avatar %>"
           alt=""
           style="width: 50px; height: auto; border-radius: 25px"
         />
-      </p>
-      <hr />
-      <!-- Who will join the event  -->
-      <p>Joining:</p>
-      <% user_avatars.forEach(user_avatar => { %>
-      <img
-        src="/<%= user_avatar.avatar %>"
-        alt=""
-        style="width: 50px; height: auto; border-radius: 25px"
-      />
-      <% }) %>
+        <% }) %>
+      </div>
     </div>
   </div>
-</div>
 
-<%- include('./partials/eventsFooter') %>
+  <%- include('./partials/eventsFooter') %>
+</div>
