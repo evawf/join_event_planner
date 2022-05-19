@@ -132,6 +132,13 @@ form {
   height: 80px;
 }
 
+/* .modal {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+
 .modal-backdrop {
   /* bug fix - no overlay */
   display: none;
