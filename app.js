@@ -12,9 +12,8 @@ import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import moment from "moment";
-moment().format();
 
-// Map
+// Mapbox API
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding.js";
 const mapBoxToken = process.env.MAPBOX_API_KEY;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
@@ -48,6 +47,12 @@ app.use(cookieParser());
 
 // Set templating engine
 app.set("view engine", "ejs");
+
+const dateFormat = "LL";
+const timeFormat = "LT";
+app.locals.moment = moment;
+app.locals.dateFormat = dateFormat;
+app.locals.timeFormat = timeFormat;
 
 /*
  ***************  Callback Functions  *****************
@@ -156,8 +161,7 @@ const showAllEvents = async (req, res) => {
       `SELECT * FROM events WHERE events.public=true AND events.owner_id!=${userId}`
     );
 
-    // console.log(publicEventsData.rows);
-    // Events I created - Pink
+    // Events I created - Green
     const myEventsData = await pool.query(
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
@@ -242,6 +246,12 @@ const displayEventInfo = async (req, res) => {
     const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
       id,
     ]);
+
+    const startTime = moment(eventData.rows[0].start_time, "HH:mm:ss").format(
+      "LT"
+    );
+    const endTime = moment(eventData.rows[0].end_time, "HH:mm:ss").format("LT");
+
     const userId = req.cookies.userId;
     const ownerId = eventData.rows[0].owner_id;
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
@@ -256,6 +266,7 @@ const displayEventInfo = async (req, res) => {
       `,
       [id]
     );
+
     const userJoinData = await pool.query(
       `
       SELECT j.isJoin, u.avatar
@@ -281,6 +292,8 @@ const displayEventInfo = async (req, res) => {
     const coodinatesData = geoData.body.features[0].geometry;
     res.render("event", {
       event: eventData.rows[0],
+      start_time: startTime,
+      end_time: endTime,
       userId: userId,
       owner: ownerData.rows[0],
       comments: commentData.rows,

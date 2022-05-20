@@ -15,12 +15,12 @@
         <!-- Event details  -->
         <div class="card-content">
           <p class="card-text my-1">
-            <i class="bi bi-calendar-check"></i> <%= event.start_time %> <%=
-            event.start_date.toLocaleDateString('el-GR') %>
+            <i class="bi bi-calendar-check"></i> <%= start_time %>, <%=
+            moment(event.start_date).format(dateFormat) %>
           </p>
           <p class="card-text my-1">
-            <i class="bi bi-calendar2-x"></i> <%= event.start_time %> <%=
-            event.end_date.toLocaleDateString('el-GR') %>
+            <i class="bi bi-calendar2-x"></i> <%= end_time %>, <%=
+            moment(event.end_date).format(dateFormat) %>
           </p>
           <p class="card-text my-1">
             <i class="bi bi-geo-alt"></i><b> <%= event.event_location %></b>
@@ -34,8 +34,10 @@
           <hr />
           <p class="card-text my-1"><b>Description</b></p>
           <p><%= event.description %></p>
+          <hr />
           <!-- Display Map  -->
           <div id="map"></div>
+          <hr />
           <!-- Only event owner can edit or delete event  -->
           <% if(currentUser.id === event.owner_id) { %>
           <div class="d-flex flex-row justify-content-center">

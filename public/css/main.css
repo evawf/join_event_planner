@@ -90,7 +90,7 @@ form {
 
 .container-fluid .card:hover .card-foot {
   z-index: 2;
-  transform: translate(0rem, 0.7rem);
+  transform: translate(0rem, 0.5rem);
 }
 
 .card-body {
