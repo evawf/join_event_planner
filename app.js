@@ -20,6 +20,7 @@ const { Pool } = pg;
 const PORT = process.env.PORT || 8080;
 const SALT = process.env.MY_SALT;
 const PLACE_KEY = process.env.PLACE_API_KEY;
+const MAPBOX_KEY = process.env.MAPBOX_API_KEY;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pgConnectionConfigs = {
@@ -271,6 +272,7 @@ const displayEventInfo = async (req, res) => {
       comments: commentData.rows,
       user_avatars: userJoinData.rows,
       likes: likesData.rows,
+      MAPBOX_KEY: MAPBOX_KEY,
     });
   } catch (err) {
     console.log("Error message:", err);

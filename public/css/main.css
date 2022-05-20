@@ -160,3 +160,10 @@ form {
   color: #ff8c32;
   border: 1.5px solid #ff8c32;
 }
+
+#map {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin-bottom: 1rem;
+}
