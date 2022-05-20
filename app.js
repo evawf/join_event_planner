@@ -1,3 +1,7 @@
+if (process.env.ENV !== "production") {
+  dotenv.config();
+}
+
 import express from "express";
 import pg from "pg";
 import methodOverride from "method-override";
@@ -9,9 +13,10 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import moment from "moment";
 
-if (process.env.ENV !== "production") {
-  dotenv.config();
-}
+// Map
+import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding.js";
+const mapBoxToken = process.env.MAPBOX_API_KEY;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 // set the name of the upload directory here
 const multerUpload = multer({ dest: "uploads/" });
@@ -265,6 +270,14 @@ const displayEventInfo = async (req, res) => {
       [id, true]
     );
 
+    const location = eventData.rows[0].event_location;
+    const geoData = await geocoder
+      .forwardGeocode({
+        query: location,
+        limit: 1,
+      })
+      .send();
+
     res.render("event", {
       event: eventData.rows[0],
       userId: userId,
@@ -273,6 +286,8 @@ const displayEventInfo = async (req, res) => {
       user_avatars: userJoinData.rows,
       likes: likesData.rows,
       MAPBOX_KEY: MAPBOX_KEY,
+      geoLon: coodinatesData.coordinates[0],
+      geoLat: coodinatesData.coordinates[1],
     });
   } catch (err) {
     console.log("Error message:", err);

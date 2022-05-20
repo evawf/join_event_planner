@@ -1,10 +1,5 @@
 <%- include('./partials/header') %> <%- include('./partials/navbar') %>
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
-<link
-  rel="stylesheet"
-  href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
-  type="text/css"
-/>
+
 <div
   class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
 >
@@ -36,7 +31,6 @@
           <hr />
           <!-- Display Map  -->
           <div id="map"></div>
-
           <!-- Only event owner can edit or delete event  -->
           <% if(currentUser.id === event.owner_id) { %>
           <div class="d-flex flex-row justify-content-center">
@@ -232,11 +226,13 @@
   };
 
   // Mapbox API
+  const lon = JSON.parse("<%= geoLon %>");
+  const lat = JSON.parse("<%= geoLat %>");
   mapboxgl.accessToken = "<%= MAPBOX_KEY %>";
   const map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v11",
-    center: [-79.4512, 43.6568],
+    center: [lon, lat],
     zoom: 13,
   });
 
@@ -247,4 +243,7 @@
       mapboxgl: mapboxgl,
     })
   );
+
+  map.addControl(new mapboxgl.NavigationControl());
+  const marker = new mapboxgl.Marker().setLngLat([lon, lat]).addTo(map);
 </script>
