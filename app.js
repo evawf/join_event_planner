@@ -12,6 +12,7 @@ import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import moment from "moment";
+// import io from "socket.io";
 
 // Mapbox API
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding.js";
@@ -155,8 +156,11 @@ const logoutUser = async (req, res) => {
 
 const showAllEvents = async (req, res) => {
   try {
-    // Public Events - Blue
     const userId = req.cookies.userId;
+    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      userId,
+    ]);
+    // Public Events - Blue
     const publicEventsData = await pool.query(
       `SELECT * FROM events WHERE events.public=true AND events.owner_id!=${userId}`
     );
@@ -165,11 +169,10 @@ const showAllEvents = async (req, res) => {
     const myEventsData = await pool.query(
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
-    // console.log(myEventsData.rows);
-    // console.log(moment(myEventsData.rows[0].start_date)); // return how many days from today
 
     // Events I was invited - Green - To Be Added Later
     res.render("events", {
+      user: userData.rows[0],
       publicEvents: publicEventsData.rows,
       myEvents: myEventsData.rows,
     });
@@ -183,10 +186,16 @@ const showAllEvents = async (req, res) => {
 const showMyEvents = async (req, res) => {
   try {
     const userId = req.cookies.userId;
+    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      userId,
+    ]);
     const myEventsData = await pool.query(
       `SELECT * FROM events WHERE owner_id=${userId}`
     );
-    res.render("myEvents", { myEvents: myEventsData.rows });
+    res.render("myEvents", {
+      user: userData.rows[0],
+      myEvents: myEventsData.rows,
+    });
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, unable to get the my event list!");
@@ -196,7 +205,12 @@ const showMyEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
   try {
+    const userId = req.cookies.userId;
+    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      userId,
+    ]);
     res.render("newEvent", {
+      user: userData.rows[0],
       place_key: PLACE_KEY,
     });
   } catch (err) {
@@ -248,6 +262,10 @@ const displayEventInfo = async (req, res) => {
     ]);
 
     const userId = req.cookies.userId;
+    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      userId,
+    ]);
+    // Event Owner
     const ownerId = eventData.rows[0].owner_id;
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
       ownerId,
@@ -261,10 +279,6 @@ const displayEventInfo = async (req, res) => {
       `,
       [id]
     );
-    console.log(
-      moment(commentData.rows[0].created_at, "HH:mm").format("YYYY-MM-DD HH:mm")
-    );
-
     const userJoinData = await pool.query(
       `
       SELECT j.isJoin, u.avatar
@@ -291,6 +305,7 @@ const displayEventInfo = async (req, res) => {
     res.render("event", {
       event: eventData.rows[0],
       userId: userId,
+      user: userData.rows[0],
       owner: ownerData.rows[0],
       comments: commentData.rows,
       user_avatars: userJoinData.rows,
@@ -313,9 +328,13 @@ const editEvent = async (req, res) => {
       id,
     ]);
     const userId = req.cookies.userId;
+    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
+      userId,
+    ]);
     const ownerId = eventData.rows[0].owner_id;
     if (Number(userId) === Number(ownerId)) {
       res.render("editEvent", {
+        user: userData.rows[0],
         event: eventData.rows[0],
       });
     } else {
