@@ -191,26 +191,30 @@
       </div>
     </div>
     <!-- Event owner  -->
-    <div class="card card text-body my-1 bg-light bg-gradient text-center">
+    <div class="card text-body my-1 bg-light bg-gradient text-center">
       <div class="card-body overflow-auto">
         <p class="card-text my-1">
           Hosting
           <br />
-          <img
-            src="/<%= owner.avatar %>"
-            alt=""
-            style="width: 50px; height: auto; border-radius: 25px"
-          />
+          <a href="/user/<%= owner.id %>">
+            <img
+              src="/<%= owner.avatar %>"
+              alt=""
+              style="width: 50px; height: auto; border-radius: 25px"
+            />
+          </a>
         </p>
         <hr />
         <!-- Who will join the event  -->
         <p>Attendees</p>
-        <% user_avatars.forEach(user_avatar => { %>
-        <img
-          src="/<%= user_avatar.avatar %>"
-          alt=""
-          style="width: 50px; height: auto; border-radius: 25px"
-        />
+        <% attendees.forEach(attendee => { %>
+        <a href="/user/<%= attendee.id %>">
+          <img
+            src="/<%= attendee.avatar %>"
+            alt=""
+            style="width: 50px; height: auto; border-radius: 25px"
+          />
+        </a>
         <% }) %>
       </div>
     </div>

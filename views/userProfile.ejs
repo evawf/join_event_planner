@@ -1,0 +1,54 @@
+<%- include('./partials/header') %>
+<div
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5"
+>
+  <div
+    class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-0 py-0 mb-3"
+  >
+    <div class="card text-body my-1 bg-light bg-gradient">
+      <div class="card-body overflow-auto">
+        <div class="card-title d-flex justify-content-center my-0">
+          <img
+            src="/<%= user.avatar %>"
+            alt=""
+            style="width: 80px; height: auto; border-radius: 40px"
+          />
+        </div>
+        <div class="card-content card-text">
+          <div class="d-flex justify-content-center my-0 py-0">
+            <h3><%= user.first_name %> <%= user.last_name %></h3>
+          </div>
+          <hr class="my-0" />
+          <p>About</p>
+          <p><%= user.about_me %></p>
+          <% if(currentUser.id !== user.id){ %>
+          <hr />
+          <div class="container-fluid d-flex flex-row text-center">
+            <form action="/" class="border-0 py-0 my-0">
+              <input
+                type="submit"
+                value="Friend Request"
+                class="btn btn-success btn-sm mx-5"
+                style="width: 150px"
+              />
+            </form>
+          </div>
+          <% } else { %>
+          <div class="container-fluid d-flex flex-row text-center">
+            <form action="/" class="border-0 py-0 my-0">
+              <input
+                type="submit"
+                value="Edit Profile"
+                class="btn btn-success btn-sm mx-5"
+                style="width: 150px"
+              />
+            </form>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

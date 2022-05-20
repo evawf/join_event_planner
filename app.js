@@ -281,7 +281,7 @@ const displayEventInfo = async (req, res) => {
     );
     const userJoinData = await pool.query(
       `
-      SELECT j.isJoin, u.avatar
+      SELECT j.isJoin, u.avatar, u.id
       FROM user_events j
       JOIN users u ON j.user_id = u.id AND j.isJoin=true
       WHERE event_id=$1
@@ -308,7 +308,7 @@ const displayEventInfo = async (req, res) => {
       user: userData.rows[0],
       owner: ownerData.rows[0],
       comments: commentData.rows,
-      user_avatars: userJoinData.rows,
+      attendees: userJoinData.rows,
       likes: likesData.rows,
       MAPBOX_KEY: MAPBOX_KEY,
       geoLon: coodinatesData.coordinates[0],
@@ -478,10 +478,12 @@ const postLikes = async (req, res) => {
 const showUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
+    const currentUser = req.cookies.userId;
     const userData = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
-    console.log(userData.rows[0]);
-    res.send("got user");
-    // res.render("user", { user: userData.rows[0] });
+    res.render("userProfile", {
+      // currentUser: currentUser,
+      user: userData.rows[0],
+    });
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, event editting is not working!");
