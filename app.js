@@ -247,11 +247,6 @@ const displayEventInfo = async (req, res) => {
       id,
     ]);
 
-    const startTime = moment(eventData.rows[0].start_time, "HH:mm:ss").format(
-      "LT"
-    );
-    const endTime = moment(eventData.rows[0].end_time, "HH:mm:ss").format("LT");
-
     const userId = req.cookies.userId;
     const ownerId = eventData.rows[0].owner_id;
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
@@ -265,6 +260,9 @@ const displayEventInfo = async (req, res) => {
       WHERE event_id=$1
       `,
       [id]
+    );
+    console.log(
+      moment(commentData.rows[0].created_at, "HH:mm").format("YYYY-MM-DD HH:mm")
     );
 
     const userJoinData = await pool.query(
@@ -292,8 +290,6 @@ const displayEventInfo = async (req, res) => {
     const coodinatesData = geoData.body.features[0].geometry;
     res.render("event", {
       event: eventData.rows[0],
-      start_time: startTime,
-      end_time: endTime,
       userId: userId,
       owner: ownerData.rows[0],
       comments: commentData.rows,

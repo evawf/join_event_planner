@@ -15,11 +15,13 @@
         <!-- Event details  -->
         <div class="card-content">
           <p class="card-text my-1">
-            <i class="bi bi-calendar-check"></i> <%= start_time %>, <%=
+            <i class="bi bi-calendar-check"></i> <%= moment(event.start_time,
+            "HH:mm:ss").format(timeFormat)%>, <%=
             moment(event.start_date).format(dateFormat) %>
           </p>
           <p class="card-text my-1">
-            <i class="bi bi-calendar2-x"></i> <%= end_time %>, <%=
+            <i class="bi bi-calendar2-x"></i> <%=
+            moment(event.end_time,"HH:mm:ss").format(timeFormat) %>, <%=
             moment(event.end_date).format(dateFormat) %>
           </p>
           <p class="card-text my-1">
@@ -107,7 +109,9 @@
             <% comments.forEach(c => { %>
             <span><%= c.first_name %>: <%= c.comment %></span>
             <br />
-            <span><%= c.created_at %></span>
+            <span>
+              <%= moment(c.created_at, "HH:mm").format("YYYY-MM-DD HH:mm") %>
+            </span>
             <hr />
             <% }) %>
           </div>
