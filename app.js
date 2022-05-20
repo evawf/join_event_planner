@@ -12,6 +12,7 @@ import jsSHA from "jssha";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import moment from "moment";
+moment().format();
 
 // Map
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding.js";
@@ -277,7 +278,7 @@ const displayEventInfo = async (req, res) => {
         limit: 1,
       })
       .send();
-
+    const coodinatesData = geoData.body.features[0].geometry;
     res.render("event", {
       event: eventData.rows[0],
       userId: userId,
@@ -388,17 +389,21 @@ const postComments = async (req, res) => {
 const postJoin = async (req, res) => {
   try {
     const { id } = req.params;
-    let isJoin;
-    if (req.body.isJoin === "1") {
-      isJoin = true;
-    } else {
-      isJoin = false;
-    }
-    const joinData = [isJoin, id, req.cookies.userId];
-    await pool.query(
-      "INSERT INTO  user_events (isJoin, event_id, user_id) VALUES ($1, $2, $3)",
-      joinData
+    const userId = req.cookies.userId;
+    const userJoinData = await pool.query(
+      "SELECT * FROM user_events WHERE user_id=$1 AND event_id=$2",
+      [userId, id]
     );
+    const isUserJoined = userJoinData.rows[0];
+    if (isUserJoined === undefined) {
+      await pool.query(
+        "INSERT INTO  user_events (isJoin, event_id, user_id) VALUES ($1, $2, $3)",
+        [req.body.isJoin, id, req.cookies.userId]
+      );
+    } else {
+      await pool.query("UPDATE user_events SET isJoin=$1", [req.body.isJoin]);
+    }
+
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);

@@ -1,10 +1,10 @@
 <%- include('./partials/header') %> <%- include('./partials/navbar') %>
 
 <div
-  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5"
 >
   <div
-    class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-0 py-0 pb-5 mb-4"
+    class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-0 py-0 mb-3"
   >
     <div class="card text-body my-1 bg-light bg-gradient">
       <div class="card-body overflow-auto">
@@ -15,20 +15,25 @@
         <!-- Event details  -->
         <div class="card-content">
           <p class="card-text my-1">
-            Start Date & Time: <%= event.start_time %> <%=
+            <i class="bi bi-calendar-check"></i> <%= event.start_time %> <%=
             event.start_date.toLocaleDateString('el-GR') %>
           </p>
           <p class="card-text my-1">
-            End Date & Time: <%= event.start_time %> <%=
+            <i class="bi bi-calendar2-x"></i> <%= event.start_time %> <%=
             event.end_date.toLocaleDateString('el-GR') %>
           </p>
-          <p class="card-text my-1">Location: <%= event.event_location %></p>
+          <p class="card-text my-1">
+            <i class="bi bi-geo-alt"></i><b> <%= event.event_location %></b>
+          </p>
           <% if(event.event_link){ %>
-          <p class="card-text my-1">Link: <%= event.event_link %></p>
+          <p class="card-text my-1">
+            <i class="bi bi-link"></i>
+            <a href="<%= event.event_link %>"><%= event.event_link %></a>
+          </p>
           <% } %>
           <hr />
-          <p class="card-text my-1">Description: <%= event.description %></p>
-          <hr />
+          <p class="card-text my-1"><b>Description</b></p>
+          <p><%= event.description %></p>
           <!-- Display Map  -->
           <div id="map"></div>
           <!-- Only event owner can edit or delete event  -->
@@ -64,7 +69,7 @@
             <form
               action="/event/<%= event.id %>/join"
               method="POST"
-              class="border-0 py-0 my-0"
+              class="border-0 py-0 my-0 text-center"
             >
               <button
                 type="submit"
@@ -208,10 +213,10 @@
 <%- include('./partials/footer') %>
 
 <script>
+  // Show or Hide comments
   const showCommentsBtn = document.getElementById("showCommentsBtn");
   const commentsDiv = document.getElementById("commentsDiv");
   const toggleShowComments = () => {
-    console.log("clicked");
     console.log(commentsDiv.style.display);
     if (
       commentsDiv.style.display === "none" ||
