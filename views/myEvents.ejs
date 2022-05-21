@@ -11,10 +11,13 @@
     >
       <h5 class="card-title my-1"><%= event.name %></h5>
       <p class="card-text my-1">
+        <i class="bi bi-calendar-heart"></i>
         <%= moment(event.start_time,"HH:mm:ss").format(timeFormat) %>, <%=
         moment(event.start_date).format(dateFormat) %>
       </p>
-      <p class="card-text my-1"><%= event.event_location %></p>
+      <p class="card-text my-1">
+        <i class="bi bi-geo-alt"></i> <%= event.event_location %>
+      </p>
     </div>
     <div class="card-foot d-flex justify-content-end w-100">
       <a href="/event/<%= event.id %>" class="btn btn-outline-dark"

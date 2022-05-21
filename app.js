@@ -171,6 +171,7 @@ const showAllEvents = async (req, res) => {
     );
 
     // Events I was invited - Green - To Be Added Later
+
     res.render("events", {
       user: userData.rows[0],
       publicEvents: publicEventsData.rows,
@@ -508,7 +509,7 @@ const showUserProfile = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).send("Sorry, page is not working!");
     return;
   }
 };
@@ -547,9 +548,6 @@ const followUser = async (req, res) => {
       [id, currentUserId]
     );
     let following = res0.rows[0] ? true : false;
-    console.log("second");
-
-    console.log(following);
     if (following) {
       await pool.query(
         "INSERT INTO followers( follower_id, followee_id ) VALUES ( $1, $2)",
