@@ -21,17 +21,42 @@
           <hr class="my-0" />
           <p>About</p>
           <p><%= user.about_me %></p>
+          <hr />
+          <div>
+            <p>Following:</p>
+            <br />
+            <p>Follower:</p>
+          </div>
           <% if(currentUser.id !== user.id){ %>
           <hr />
           <div class="container-fluid d-flex flex-row text-center">
-            <form action="/" class="border-0 py-0 my-0">
+            <% if( following ) { %>
+            <form
+              action="/user/<%= user.id %>/unfollow"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
               <input
                 type="submit"
-                value="Friend Request"
-                class="btn btn-success btn-sm mx-5"
+                class="btn btn-warning btn-sm mx-5"
                 style="width: 150px"
+                value="Unfollow"
               />
             </form>
+            <% } else { %>
+            <form
+              action="/user/<%= user.id %>/follow"
+              method="POST"
+              class="border-0 py-0 my-0"
+            >
+              <input
+                type="submit"
+                class="btn btn-success btn-sm mx-5"
+                style="width: 150px"
+                value="Follow"
+              />
+            </form>
+            <% } %>
           </div>
           <% } else { %>
           <div class="container-fluid d-flex flex-row text-center">
@@ -52,3 +77,17 @@
 </div>
 
 <%- include('./partials/footer') %>
+<script>
+  // const followBtn = document.getElementById("followBtn");
+  // const toggleFollowBtn = () => {
+  //   if (followBtn.value === "0") {
+  //     followBtn.value = "1";
+  //     followBtn.textContent = "Unfollow";
+  //     console.log(followBtn.value);
+  //   } else {
+  //     followBtn.value = "0";
+  //     followBtn.textContent = "Follow";
+  //     console.log(followBtn.value);
+  //   }
+  // };
+</script>

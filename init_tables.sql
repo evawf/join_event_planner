@@ -48,6 +48,11 @@ CREATE TABLE likes (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-
+CREATE TABLE followers (
+  id SERIAL PRIMARY KEY,
+  follower_id INTEGER NOT NULL REFERENCES users(id),
+  followee_id INTEGER NOT NULL REFERENCES users(id),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 -- CREATE TABLE event_types (id SERIAL PRIMARY KEY, event_id INTEGER, type1_id INTEGER, type2_id INTEGER);
 -- CREATE TABLE types (id SERIAL PRIMARY KEY, name TEXT);

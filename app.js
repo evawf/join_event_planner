@@ -478,15 +478,75 @@ const postLikes = async (req, res) => {
 const showUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const currentUser = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
+    const currentUserId = req.cookies.userId;
+
+    const res0 = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
+    const userData = res0.rows[0];
+
+    const res1 = await pool.query(
+      "SELECT count(1) FROM followers WHERE followee_id = $1 AND follower_id = $2",
+      [id, currentUserId]
+    );
+    const following = res1.rows[0].count > 0 ? true : false;
+
     res.render("userProfile", {
-      // currentUser: currentUser,
-      user: userData.rows[0],
+      user: userData,
+      following: following,
     });
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
+
+const unfollowUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = req.cookies.userId;
+    const res0 = await pool.query(
+      "SELECT count(1) FROM followers WHERE followee_id = $1 AND follower_id = $2",
+      [id, currentUserId]
+    );
+    let following = res0.rows[0] ? true : false;
+    console.log("first");
+    console.log(following);
+    if (following) {
+      await pool.query(
+        "DELETE FROM followers WHERE followee_id = $1 AND follower_id = $2",
+        [id, currentUserId]
+      );
+    }
+    res.redirect(`/user/${id}`);
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, site is not working!");
+    return;
+  }
+};
+
+const followUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = req.cookies.userId;
+    const res0 = await pool.query(
+      "SELECT count(1) FROM followers WHERE followee_id = $1 AND follower_id = $2",
+      [id, currentUserId]
+    );
+    let following = res0.rows[0] ? true : false;
+    console.log("second");
+
+    console.log(following);
+    if (following) {
+      await pool.query(
+        "INSERT INTO followers( follower_id, followee_id ) VALUES ( $1, $2)",
+        [currentUserId, id]
+      );
+    }
+    res.redirect(`/user/${id}`);
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, site is not working!");
     return;
   }
 };
@@ -574,6 +634,8 @@ app.post("/event/:id/likes", isLoggedIn, postLikes);
 
 // User routes
 app.get("/user/:id", isLoggedIn, showUserProfile);
+app.post("/user/:id/follow", isLoggedIn, followUser);
+app.post("/user/:id/unfollow", isLoggedIn, unfollowUser);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);
