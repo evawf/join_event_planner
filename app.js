@@ -479,19 +479,32 @@ const showUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const currentUserId = req.cookies.userId;
-
     const res0 = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
     const userData = res0.rows[0];
-
     const res1 = await pool.query(
       "SELECT count(1) FROM followers WHERE followee_id = $1 AND follower_id = $2",
       [id, currentUserId]
     );
     const following = res1.rows[0].count > 0 ? true : false;
+    // Get followers
+    const res2 = await pool.query(
+      "SELECT followee_id, avatar FROM followers INNER JOIN users ON followee_id=users.id WHERE follower_id=$1",
+      [id]
+    );
+    const followeesData = res2.rows;
+
+    // Get following info
+    const res3 = await pool.query(
+      "SELECT follower_id, avatar FROM followers INNER JOIN users ON follower_id=users.id WHERE followee_id=$1",
+      [id]
+    );
+    const followersData = res3.rows;
 
     res.render("userProfile", {
       user: userData,
       following: following,
+      followees: followeesData,
+      followers: followersData,
     });
   } catch (err) {
     console.log("Error message:", err);

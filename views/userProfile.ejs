@@ -23,9 +23,31 @@
           <p><%= user.about_me %></p>
           <hr />
           <div>
-            <p>Following:</p>
-            <br />
-            <p>Follower:</p>
+            <p>Following</p>
+            <div>
+              <% followees.forEach(followee => { %>
+              <a href="/user/<%= followee.followee_id %>">
+                <img
+                  src="/<%= followee.avatar%>"
+                  alt=""
+                  style="width: 40px; height: auto; border-radius: 20px"
+                />
+              </a>
+              <% }); %>
+            </div>
+            <hr />
+            <p>Follower</p>
+            <div>
+              <% followers.forEach(follower => { %>
+              <a href="/user/<%= follower.follower_id %>">
+                <img
+                  src="/<%= follower.avatar%>"
+                  alt=""
+                  style="width: 40px; height: auto; border-radius: 20px"
+                />
+              </a>
+              <% }); %>
+            </div>
           </div>
           <% if(currentUser.id !== user.id){ %>
           <hr />
@@ -77,17 +99,3 @@
 </div>
 
 <%- include('./partials/footer') %>
-<script>
-  // const followBtn = document.getElementById("followBtn");
-  // const toggleFollowBtn = () => {
-  //   if (followBtn.value === "0") {
-  //     followBtn.value = "1";
-  //     followBtn.textContent = "Unfollow";
-  //     console.log(followBtn.value);
-  //   } else {
-  //     followBtn.value = "0";
-  //     followBtn.textContent = "Follow";
-  //     console.log(followBtn.value);
-  //   }
-  // };
-</script>
