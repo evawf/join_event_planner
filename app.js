@@ -331,7 +331,7 @@ const displayEventInfo = async (req, res) => {
     const ownerId = eventData.owner_id;
     const res3 = await pool.query("SELECT * FROM users WHERE id=$1", [ownerId]);
     const ownerData = res3.rows[0];
-    const commentData = await pool.query(
+    const res4 = await pool.query(
       `
       SELECT c.created_at, c.comment, u.first_name
       FROM comments c
@@ -340,7 +340,8 @@ const displayEventInfo = async (req, res) => {
       `,
       [id]
     );
-    const userJoinData = await pool.query(
+    const commentData = res4.rows;
+    const res5 = await pool.query(
       `
       SELECT j.isJoin, u.avatar, u.id
       FROM user_events j
@@ -349,12 +350,12 @@ const displayEventInfo = async (req, res) => {
       `,
       [id]
     );
-
-    const likesData = await pool.query(
+    const userJoinData = res5.rows;
+    const res6 = await pool.query(
       "SELECT * FROM likes WHERE event_id=$1 AND liked=$2",
       [id, true]
     );
-
+    const likesData = res6.rows;
     const location = eventData.event_location;
     const geoData = await geocoder
       .forwardGeocode({
@@ -368,9 +369,9 @@ const displayEventInfo = async (req, res) => {
       userId: userId,
       user: userData,
       owner: ownerData,
-      comments: commentData.rows,
-      attendees: userJoinData.rows,
-      likes: likesData.rows,
+      comments: commentData,
+      attendees: userJoinData,
+      likes: likesData,
       MAPBOX_KEY: MAPBOX_KEY,
       geoLon: coodinatesData.coordinates[0],
       geoLat: coodinatesData.coordinates[1],
@@ -489,7 +490,10 @@ const postJoin = async (req, res) => {
         [req.body.isJoin, id, req.cookies.userId]
       );
     } else {
-      await pool.query("UPDATE user_events SET isJoin=$1", [req.body.isJoin]);
+      await pool.query(
+        "UPDATE user_events SET isJoin=$1 WHERE event_id=$2 AND user_id=$3",
+        [req.body.isJoin, id, userId]
+      );
     }
 
     res.redirect(`/event/${id}`);
@@ -620,6 +624,49 @@ const followUser = async (req, res) => {
   }
 };
 
+const editUserProfile = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res1.rows[0];
+    res.render("editUserProfile", {
+      user: userData,
+    });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, event editting is not working!");
+    return;
+  }
+};
+
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    const { first_name, last_name, about_me } = req.body;
+    console.log(first_name);
+    console.log(req?.file?.filename);
+    let values;
+    if (req?.file?.filename) {
+      values = [first_name, last_name, req.file.filename, about_me, userId];
+      await pool.query(
+        "UPDATE users SET first_name=$1, last_name=$2, avatar=3$, about_me=$4 WHERE id=$5",
+        values
+      );
+    } else {
+      values = [first_name, last_name, about_me, userId];
+      await pool.query(
+        "UPDATE users SET first_name=$1, last_name=$2, about_me=$3 WHERE id=$4",
+        values
+      );
+    }
+    res.redirect(`/user/${userId}`);
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).send("Sorry, something went wrong!");
+    return;
+  }
+};
+
 /***************************************************************
  Middleware for Login check
  **************************************************************/
@@ -706,8 +753,10 @@ app.post("/event/:id/likes", isLoggedIn, postLikes);
 
 // User routes
 app.get("/user/:id", isLoggedIn, showUserProfile);
-app.post("/user/:id/follow", isLoggedIn, followUser);
 app.post("/user/:id/unfollow", isLoggedIn, unfollowUser);
+app.post("/user/:id/follow", isLoggedIn, followUser);
+app.get("/user/:id/edit", isLoggedIn, editUserProfile);
+app.put("/user/:id/edit", isLoggedIn, updateUserProfile);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);

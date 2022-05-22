@@ -1,0 +1,58 @@
+<%- include('./partials/header') %>
+<div
+  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
+>
+  <h4 class="mb-4">Update Profile</h4>
+  <form
+    action="/user/<%= user.id %>/edit?_method=PUT"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <!-- First name -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="first_name"
+        id="first_name"
+        placeholder="First Name"
+        class="form-control"
+        value="<%= user.first_name %>"
+        required
+      />
+    </div>
+    <!-- Last name -->
+    <div class="mb-3">
+      <input
+        type="text"
+        name="last_name"
+        id="last_name"
+        placeholder="Last Name"
+        class="form-control"
+        value="<%= user.last_name %>"
+        required
+      />
+    </div>
+    <!-- Avatar  -->
+    <div class="mb-3">
+      <input
+        type="file"
+        name="avatar"
+        id="avatar"
+        class="form-control"
+        accept="image/png, image/jpeg"
+        value="<%= user.avatar %>"
+      />
+    </div>
+    <!-- About Me  -->
+    <div class="mb-3">
+      <textarea name="about_me" id="about_me" class="form-control">
+<%= user.about_me %>
+      </textarea>
+    </div>
+
+    <!-- Submit -->
+    <div class="mb-3 d-flex flex-column align-items-center">
+      <button type="submit" class="btn btn-primary form-control">Submit</button>
+    </div>
+  </form>
+</div>
