@@ -74,7 +74,6 @@ const createUserAccount = async (req, res) => {
 
 const postUserAccount = async (req, res) => {
   try {
-    console.log(req.file);
     const shaObj = new jsSHA("SHA-512", "TEXT", { encoding: "UTF8" });
     shaObj.update(req.body.password);
     const hashedPassword = shaObj.getHash("HEX");
@@ -86,7 +85,6 @@ const postUserAccount = async (req, res) => {
       req.body.email,
       hashedPassword,
     ];
-    console.log(values);
     await pool.query(
       "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
       values
@@ -157,25 +155,26 @@ const logoutUser = async (req, res) => {
 const showAllEvents = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      userId,
-    ]);
-    // Public Events - Blue
-    const publicEventsData = await pool.query(
+    const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res1.rows[0];
+    // Public Events from other users - Blue
+    const res2 = await pool.query(
       `SELECT * FROM events WHERE public=true AND owner_id!=${userId} AND end_date>CURRENT_DATE`
     );
+    const publicEventsData = res2.rows;
 
-    // Events I created - Green
-    const myEventsData = await pool.query(
-      `SELECT * FROM events WHERE owner_id=${userId} AND end_date>CURRENT_DATE`
+    // Public Events I created - Green
+    const res3 = await pool.query(
+      `SELECT * FROM events WHERE public=true AND owner_id=${userId} AND end_date>CURRENT_DATE`
     );
+    const myEventsData = res3.rows;
 
-    // Events I was invited - Green - To Be Added Later
+    // Private Events I was invited - Green - To Be Added Later
 
     res.render("events", {
-      user: userData.rows[0],
-      publicEvents: publicEventsData.rows,
-      myEvents: myEventsData.rows,
+      user: userData,
+      publicEvents: publicEventsData,
+      myEvents: myEventsData,
     });
   } catch (err) {
     console.log("Error message:", err);
@@ -187,15 +186,19 @@ const showAllEvents = async (req, res) => {
 const showMyEvents = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      userId,
-    ]);
-    const myEventsData = await pool.query(
-      `SELECT * FROM events WHERE owner_id=${userId}`
+    const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res1.rows[0];
+    const res2 = await pool.query(
+      `
+      SELECT * 
+      FROM events 
+      WHERE owner_id=${userId}
+      `
     );
+    const myEventsData = res2.rows;
     res.render("myEvents", {
-      user: userData.rows[0],
-      myEvents: myEventsData.rows,
+      user: userData,
+      myEvents: myEventsData,
     });
   } catch (err) {
     console.log("Error message:", err);
@@ -220,7 +223,7 @@ const showPastEvents = async (req, res) => {
       JOIN user_events ue ON e.id = ue.event_id 
       WHERE e.end_date < NOW()
         AND ue.isJoin=true
-        AND ue.user_id = $1
+        AND ue.user_id=$1
       `,
       [userId]
     );
@@ -269,11 +272,10 @@ const showIncomingEvents = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      userId,
-    ]);
+    const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res1.rows[0];
     res.render("newEvent", {
-      user: userData.rows[0],
+      user: userData,
       place_key: PLACE_KEY,
     });
   } catch (err) {
@@ -305,7 +307,7 @@ const postEvent = async (req, res) => {
       req.body.live,
       req.body.public,
     ];
-    const eventData = await pool.query(
+    await pool.query(
       "INSERT INTO events (name, start_date, start_time, end_date, end_time, event_link, event_location, description, owner_id,live,public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
       data
     );
@@ -320,18 +322,15 @@ const postEvent = async (req, res) => {
 const displayEventInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
-      id,
-    ]);
+    const res1 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
+    const eventData = res1.rows[0];
     const userId = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      userId,
-    ]);
+    const res2 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res2.rows[0];
     // Event Owner
-    const ownerId = eventData.rows[0].owner_id;
-    const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      ownerId,
-    ]);
+    const ownerId = eventData.owner_id;
+    const res3 = await pool.query("SELECT * FROM users WHERE id=$1", [ownerId]);
+    const ownerData = res3.rows[0];
     const commentData = await pool.query(
       `
       SELECT c.created_at, c.comment, u.first_name
@@ -356,7 +355,7 @@ const displayEventInfo = async (req, res) => {
       [id, true]
     );
 
-    const location = eventData.rows[0].event_location;
+    const location = eventData.event_location;
     const geoData = await geocoder
       .forwardGeocode({
         query: location,
@@ -365,10 +364,10 @@ const displayEventInfo = async (req, res) => {
       .send();
     const coodinatesData = geoData.body.features[0].geometry;
     res.render("event", {
-      event: eventData.rows[0],
+      event: eventData,
       userId: userId,
-      user: userData.rows[0],
-      owner: ownerData.rows[0],
+      user: userData,
+      owner: ownerData,
       comments: commentData.rows,
       attendees: userJoinData.rows,
       likes: likesData.rows,
@@ -386,18 +385,16 @@ const displayEventInfo = async (req, res) => {
 const editEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
-      id,
-    ]);
+    const res1 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
+    const eventData = res1.rows[0];
     const userId = req.cookies.userId;
-    const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
-      userId,
-    ]);
-    const ownerId = eventData.rows[0].owner_id;
+    const res2 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
+    const userData = res2.rows[0];
+    const ownerId = eventData.owner_id;
     if (Number(userId) === Number(ownerId)) {
       res.render("editEvent", {
-        user: userData.rows[0],
-        event: eventData.rows[0],
+        user: userData,
+        event: eventData,
       });
     } else {
       res.status(404).send("Sorry, only event owner can edit this page!");
@@ -480,11 +477,12 @@ const postJoin = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.cookies.userId;
-    const userJoinData = await pool.query(
+    const res1 = await pool.query(
       "SELECT * FROM user_events WHERE user_id=$1 AND event_id=$2",
       [userId, id]
     );
-    const isUserJoined = userJoinData.rows[0];
+    const userJoinData = res1.rows[0];
+    const isUserJoined = userJoinData;
     if (isUserJoined === undefined) {
       await pool.query(
         "INSERT INTO  user_events (isJoin, event_id, user_id) VALUES ($1, $2, $3)",
@@ -506,11 +504,12 @@ const postLikes = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.cookies.userId;
-    const likesData = await pool.query(
+    const res1 = await pool.query(
       "SELECT * FROM likes WHERE event_id=$1 AND user_id=$2",
       [id, userId]
     );
-    const isLiked = likesData.rows[0];
+    const likesData = res1.rows[0];
+    const isLiked = likesData;
     if (isLiked === undefined) {
       const data = [true, id, userId];
       await pool.query(
@@ -554,14 +553,12 @@ const showUserProfile = async (req, res) => {
       [id]
     );
     const followeesData = res2.rows;
-
     // Get following info
     const res3 = await pool.query(
       "SELECT follower_id, avatar FROM followers INNER JOIN users ON follower_id=users.id WHERE followee_id=$1",
       [id]
     );
     const followersData = res3.rows;
-
     res.render("userProfile", {
       user: userData,
       following: following,
