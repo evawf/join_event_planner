@@ -10,12 +10,12 @@
       class="card-body overflow-auto text-body my-1 py-1 bg-info bg-gradient"
     >
       <h5 class="card-title my-1"><%= event.name %></h5>
-      <p class="card-text my-1">
+      <p class="card-text my-1 lh-1">
         <i class="bi bi-calendar-heart"></i>
         <%= moment(event.start_time, "HH:mm:ss").format(timeFormat) %>, <%=
         moment(event.start_date).format(dateFormat) %>
       </p>
-      <p class="card-text my-1">
+      <p class="card-text my-1 lh-1">
         <i class="bi bi-geo-alt"></i>
         <%= event.event_location %>
       </p>
@@ -34,12 +34,12 @@
       class="card-body overflow-auto text-body my-1 py-1 bg-success bg-gradient"
     >
       <h5 class="card-title my-1"><%= event.name %></h5>
-      <p class="card-text my-1">
+      <p class="card-text my-1 lh-1">
         <i class="bi bi-calendar-heart"></i>
         <%= moment(event.start_time, "HH:mm:ss").format(timeFormat) %>, <%=
         moment(event.start_date).format(dateFormat) %>
       </p>
-      <p class="card-text my-1">
+      <p class="card-text my-1 lh-1">
         <i class="bi bi-geo-alt"></i> <%= event.event_location %>
       </p>
     </div>

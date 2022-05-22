@@ -162,12 +162,12 @@ const showAllEvents = async (req, res) => {
     ]);
     // Public Events - Blue
     const publicEventsData = await pool.query(
-      `SELECT * FROM events WHERE events.public=true AND events.owner_id!=${userId}`
+      `SELECT * FROM events WHERE public=true AND owner_id!=${userId} AND end_date>CURRENT_DATE`
     );
 
     // Events I created - Green
     const myEventsData = await pool.query(
-      `SELECT * FROM events WHERE owner_id=${userId}`
+      `SELECT * FROM events WHERE owner_id=${userId} AND end_date>CURRENT_DATE`
     );
 
     // Events I was invited - Green - To Be Added Later
@@ -200,6 +200,37 @@ const showMyEvents = async (req, res) => {
   } catch (err) {
     console.log("Error message:", err);
     res.status(404).send("Sorry, unable to get the my event list!");
+    return;
+  }
+};
+
+const showPastEvents = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    const res1 = await pool.query(
+      `
+      SELECT e.id,
+        e.name,
+        e.start_date,
+        e.start_time,
+        e.event_location,
+        e.description,
+        ue.id AS user_events_id
+      FROM events e
+      JOIN user_events ue ON e.id = ue.event_id 
+      WHERE e.end_date < NOW()
+        AND ue.user_id = $1
+      `,
+      [userId]
+    );
+    const pastEventsData = res1.rows;
+    console.log(pastEventsData);
+    res.render("pastEvents", {
+      pastEvents: pastEventsData,
+    });
+  } catch (err) {
+    console.log("Error message:", err);
+    res.status(404).send("Sorry, page is not working!");
     return;
   }
 };
@@ -261,13 +292,14 @@ const displayEventInfo = async (req, res) => {
     const eventData = await pool.query("SELECT * FROM events WHERE id=$1", [
       id,
     ]);
-
+    console.log(eventData.rows);
     const userId = req.cookies.userId;
     const userData = await pool.query("SELECT * FROM users WHERE id=$1", [
       userId,
     ]);
     // Event Owner
     const ownerId = eventData.rows[0].owner_id;
+    console.log(ownerId);
     const ownerData = await pool.query("SELECT * FROM users WHERE id=$1", [
       ownerId,
     ]);
@@ -625,8 +657,9 @@ app.post("/login", authUserLogin);
 app.get("/logout", logoutUser);
 
 // Event routes
-app.get("/events", isLoggedIn, showAllEvents);
-app.get("/myEvents", isLoggedIn, showMyEvents);
+app.get("/events", isLoggedIn, showAllEvents); // Public Events and Events created by me
+app.get("/myEvents", isLoggedIn, showMyEvents); // Events created by me
+app.get("/pastEvents", isLoggedIn, showPastEvents); // Past all Events
 app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
 app.get("/event/:id", isLoggedIn, displayEventInfo);

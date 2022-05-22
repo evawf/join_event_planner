@@ -3,11 +3,11 @@
 <div
   class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
 >
-  <!-- My Events  -->
-  <% myEvents.forEach((event) => { %>
+  <!-- Past Events  -->
+  <% pastEvents.forEach(event => { %>
   <div class="card">
     <div
-      class="card-body overflow-auto text-body my-1 py-1 bg-success bg-gradient"
+      class="card-body overflow-auto text-body my-1 py-1 bg-secondary bg-gradient"
     >
       <h5 class="card-title my-1"><%= event.name %></h5>
       <p class="card-text my-1 lh-1">
