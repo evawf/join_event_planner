@@ -1,0 +1,29 @@
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
+
+<div
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
+>
+  <!-- Past Events  -->
+  <% incomingEvents.forEach(event => { %>
+  <div class="card">
+    <div class="card-body overflow-auto text-body my-1 py-1 incomingEvents">
+      <h5 class="card-title my-1"><%= event.name %></h5>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-calendar-heart"></i>
+        <%= moment(event.start_time,"HH:mm:ss").format(timeFormat) %>, <%=
+        moment(event.start_date).format(dateFormat) %>
+      </p>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-geo-alt"></i> <%= event.event_location %>
+      </p>
+    </div>
+    <div class="card-foot d-flex justify-content-end w-100">
+      <a href="/event/<%= event.id %>" class="btn btn-outline-dark"
+        ><i class="fa-solid fa-angles-right"></i
+      ></a>
+    </div>
+  </div>
+  <% }) %>
+</div>
+
+<%- include('./partials/footer') %>
