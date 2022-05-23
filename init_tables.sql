@@ -5,7 +5,7 @@ CREATE TABLE users (
   avatar TEXT,
   about_me TEXT,
   email TEXT NOT NULL,
-  hashed_password TEXT,
+  hashed_password TEXT NOT NULL,
   created_at TIMESTAMPT WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 CREATE TABLE events (
@@ -18,7 +18,7 @@ CREATE TABLE events (
   event_link TEXT,
   event_location TEXT,
   description TEXT,
-  owner_id INTEGER,
+  owner_id INTEGER NOT NULL REFERENCES users(id),
   public BOOLEAN,
   live BOOLEAN,
   created_at TIMESTAMPT WITH TIME ZONE NOT NULL DEFAULT NOW()
@@ -27,24 +27,24 @@ CREATE TABLE events (
 CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
   comment TEXT NOT NULL,
-  event_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
+  event_id INTEGER NOT NULL REFERENCES events(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE user_events (
   id SERIAL PRIMARY KEY,
   isJoin BOOLEAN,
-  event_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
+  event_id INTEGER NOT NULL REFERENCES events(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 )
 
 CREATE TABLE likes (
   id SERIAL PRIMARY KEY,
   liked BOOLEAN NOT NULL,
-  event_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
+  event_id INTEGER NOT NULL REFERENCES events(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
@@ -54,5 +54,5 @@ CREATE TABLE followers (
   followee_id INTEGER NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
--- CREATE TABLE event_types (id SERIAL PRIMARY KEY, event_id INTEGER, type1_id INTEGER, type2_id INTEGER);
+
 -- CREATE TABLE types (id SERIAL PRIMARY KEY, name TEXT);
