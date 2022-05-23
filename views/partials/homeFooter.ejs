@@ -1,13 +1,15 @@
 <footer class="footer fixed-bottom ">
-  <div class="container d-flex justify-content-between bg-dark py-1 my-0 align-items-center">
+  <div class="container d-flex py-1 my-0 ">
     <% if(!loggedIn) { %>
-      <a href="/login" class="my-4" ><i class="fa-solid fa-circle-user fa-3x homeIcons"></i></a>
+      <div class="text-center w-100 pb-2">
+        <a href="/login" class="my-4" ><i class="fa-solid fa-circle-user fa-3x homeIcons"></i></a>
+      </div>
     <% } else { %>
-      <!-- <div class="d-flex justify-content-between align-items-center"> -->
-        <a href="/myEvents" class="my-4"><i class="fa-solid fa-heart fa-2x homeIcons"></i><br></a>
-        <a href="/events" class="my-4"><i class="fa-solid fa-calendar-days fa-2x homeIcons"></i><br></a>
-        <a href="/logout" class="my-4"><i class="fa-solid fa-right-from-bracket fa-2x homeIcons"></i><br></a>
-      <!-- </div> -->
+      <div class="d-flex justify-content-between align-items-center w-100 py-0">
+        <a href="/myEvents" class="my-3"><i class="fa-solid fa-heart fa-2x homeIcons"></i><br></a>
+        <a href="/events" class="my-3"><i class="fa-solid fa-calendar-days fa-2x homeIcons"></i><br></a>
+        <a href="/logout" class="my-3"><i class="fa-solid fa-right-from-bracket fa-2x homeIcons"></i><br></a>
+      </div>
     <% } %>
   </div>
 </footer>
