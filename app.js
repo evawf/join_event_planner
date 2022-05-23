@@ -719,36 +719,29 @@ const isLoggedIn = async (req, res, next) => {
 
 // Render Homepage
 app.get("/", displayHomepage);
-
 // Sign up and Log in/out routes
 app.get("/signup", createUserAccount);
 app.post("/signup", multerUpload.single("avatar"), postUserAccount);
 app.get("/login", renderUserLogin);
 app.post("/login", authUserLogin);
 app.get("/logout", logoutUser);
-
 // Event routes
 app.get("/events", isLoggedIn, showAllEvents); // Public Events and Public Events created by me
 app.get("/myEvents", isLoggedIn, showMyEvents); // Events created by me
 app.get("/pastEvents", isLoggedIn, showPastEvents); // All Past Events I joined
 app.get("/inComingEvents", isLoggedIn, showIncomingEvents); // All Incoming Events I joined
-
 app.get("/newEvent", isLoggedIn, createEvent);
 app.post("/newEvent", isLoggedIn, postEvent);
 app.get("/event/:id", isLoggedIn, displayEventInfo);
 app.get("/event/:id/edit", isLoggedIn, editEvent);
 app.put("/event/:id/edit", isLoggedIn, updateEvent);
 app.delete("/event/:id", isLoggedIn, deleteEvent);
-
 // Comments route
 app.post("/event/:id/comments", isLoggedIn, postComments);
-
 // Join route
 app.post("/event/:id/join", isLoggedIn, postJoin);
-
 // Likes route
 app.post("/event/:id/likes", isLoggedIn, postLikes);
-
 // User routes
 app.get("/user/:id", isLoggedIn, showUserProfile);
 app.post("/user/:id/unfollow", isLoggedIn, unfollowUser);
