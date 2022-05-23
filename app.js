@@ -624,13 +624,12 @@ const followUser = async (req, res) => {
   }
 };
 
-const editUserPage = async (req, res) => {
+const editUserInfo = async (req, res) => {
   try {
     const userId = req.cookies.userId;
     const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
     const userData = res1.rows[0];
-    console.log(userData);
-    res.render("editUserPage", {
+    res.render("editUserInfo", {
       user: userData,
     });
   } catch (err) {
@@ -640,14 +639,10 @@ const editUserPage = async (req, res) => {
   }
 };
 
-const updateUserProfile = async (req, res) => {
+const updateUserInfo = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    console.log(userId);
-    console.log(req.body);
     const { first_name, last_name, about_me } = req.body;
-    console.log(first_name);
-    console.log(req?.file?.filename);
     let values;
     if (req?.file?.filename) {
       values = [first_name, last_name, req.file.filename, about_me, userId];
@@ -758,8 +753,13 @@ app.post("/event/:id/likes", isLoggedIn, postLikes);
 app.get("/user/:id", isLoggedIn, showUserProfile);
 app.post("/user/:id/unfollow", isLoggedIn, unfollowUser);
 app.post("/user/:id/follow", isLoggedIn, followUser);
-app.get("/user/:id/edit", isLoggedIn, editUserPage);
-app.put("/user/:id/edit", isLoggedIn, updateUserProfile);
+app.get("/user/:id/edit", isLoggedIn, editUserInfo);
+app.put(
+  "/user/:id/edit",
+  isLoggedIn,
+  multerUpload.single("avatar"),
+  updateUserInfo
+);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);
