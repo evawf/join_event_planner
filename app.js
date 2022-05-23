@@ -722,6 +722,21 @@ const showInvitationForm = async (req, res) => {
 
 const postInvitations = async (req, res) => {
   try {
+    const { id } = req.params;
+    const userId = req.cookies.userId;
+    const friendIds = req.body.friend_ids;
+
+    for (let i = 0; i < friendIds.length; i += 1) {
+      await pool.query(
+        `
+        INSERT INTO invitations 
+        (sender_id, receiver_id, event_id) 
+        VALUES ($1, $2, $3)`,
+        [userId, friendIds[i], id]
+      );
+    }
+
+    res.redirect(`/event/${id}`);
   } catch (error) {
     console.log("Error messge:", error);
     res.status(404).render("error", { error: err });

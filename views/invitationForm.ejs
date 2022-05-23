@@ -5,11 +5,7 @@
 >
   <!-- My Friends  -->
   <h5 class="text-center my-3">My Friends</h5>
-  <form
-    action="/event/<%= event.id %>/invite"
-    method="POST"
-    enctype="multipart/form-data"
-  >
+  <form action="/event/<%= event.id %>/invite" method="POST">
     <% friends.forEach((friend) => { %>
     <div class="d-flex flex-row justify-content-between align-items-center">
       <label for="friends" class="mx-3">
@@ -22,7 +18,7 @@
       </label>
       <input
         type="checkbox"
-        name="friends"
+        name="friend_ids"
         value="<%= friend.id %>"
         class="mx-3"
       />
