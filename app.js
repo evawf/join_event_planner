@@ -62,12 +62,12 @@ const displayHomepage = (req, res) => {
   res.render("home");
 };
 
-const createUserAccount = async (req, res) => {
+const createUserAccount = (req, res) => {
   try {
     res.render("signupForm");
-  } catch (error) {
-    console.log("Error messge:", error);
-    res.status(404).send("Sorry, can't find login form!");
+  } catch (err) {
+    console.log("Error messge:", err);
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -92,7 +92,7 @@ const postUserAccount = async (req, res) => {
     res.redirect("/login");
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).send("Sorry, something went wrong!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -102,7 +102,7 @@ const renderUserLogin = async (req, res) => {
     res.render("loginForm");
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).send("Sorry, can't find login form!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -143,7 +143,7 @@ const authUserLogin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).send("Sorry, can't find user info!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -178,7 +178,7 @@ const showAllEvents = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, unable to get the event list!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -202,7 +202,7 @@ const showMyEvents = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, unable to get the my event list!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -233,7 +233,7 @@ const showPastEvents = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, page is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -264,7 +264,7 @@ const showIncomingEvents = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, page is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -280,7 +280,7 @@ const createEvent = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, can't find create event page!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -314,7 +314,7 @@ const postEvent = async (req, res) => {
     res.redirect("/events");
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, new event page is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -378,7 +378,7 @@ const displayEventInfo = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event page is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -403,7 +403,7 @@ const editEvent = async (req, res) => {
     }
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -438,7 +438,7 @@ const updateEvent = async (req, res) => {
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -454,7 +454,7 @@ const deleteEvent = async (req, res) => {
     res.redirect("/myEvents");
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -469,7 +469,7 @@ const postComments = async (req, res) => {
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -499,7 +499,7 @@ const postJoin = async (req, res) => {
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -535,7 +535,7 @@ const postLikes = async (req, res) => {
     res.redirect(`/event/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -571,7 +571,7 @@ const showUserProfile = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, page is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -596,7 +596,7 @@ const unfollowUser = async (req, res) => {
     res.redirect(`/user/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, site is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -619,7 +619,7 @@ const followUser = async (req, res) => {
     res.redirect(`/user/${id}`);
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, site is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -634,7 +634,7 @@ const editUserInfo = async (req, res) => {
     });
   } catch (err) {
     console.log("Error message:", err);
-    res.status(404).send("Sorry, event editting is not working!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -660,7 +660,7 @@ const updateUserInfo = async (req, res) => {
     res.redirect(`/user/${userId}`);
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).send("Sorry, something went wrong!");
+    res.status(404).render("error", { error: err });
     return;
   }
 };
@@ -728,7 +728,7 @@ app.post("/login", authUserLogin);
 app.get("/logout", logoutUser);
 
 // Event routes
-app.get("/events", isLoggedIn, showAllEvents); // Public Events and Events created by me
+app.get("/events", isLoggedIn, showAllEvents); // Public Events and Public Events created by me
 app.get("/myEvents", isLoggedIn, showMyEvents); // Events created by me
 app.get("/pastEvents", isLoggedIn, showPastEvents); // All Past Events I joined
 app.get("/inComingEvents", isLoggedIn, showIncomingEvents); // All Incoming Events I joined

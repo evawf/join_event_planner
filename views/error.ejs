@@ -1,0 +1,18 @@
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
+<div
+  class="container-fluid col-md-6 d-flex flex-column overflow-auto h-100 justify-content-center algin-items-center my-5 pb-4"
+>
+  <div class="card">
+    <div
+      class="card-body overflow-auto text-body my-2 py-4 bg-warning bg-gradient"
+    >
+      <h5>Error Message</h5>
+      <p>Sorry dear friend, something went wrong:</p>
+      <h6 class="text-danger"><%= error %></h6>
+      <p>Please try again!</p>
+      <a href="/events">Back</a>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>
