@@ -1,9 +1,9 @@
-<%- include('./partials/header') %>
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
 
 <div
-  class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
+  class="container-fluid d-flex flex-column overflow-auto h-100 justify-content-start my-5"
 >
-  <h4 class="mb-4">Update Event</h4>
+  <h4 class="my-2 text-center">Update Event</h4>
   <form action="/event/<%= event.id %>/edit?_method=PUT" method="POST">
     <!-- Event Name  -->
     <div class="mb-3">
@@ -27,6 +27,7 @@
           id="start_date"
           value="<%= event.start_date %>"
           placeholder="Start Date"
+          required
         />
         <input
           type="time"
@@ -68,7 +69,7 @@
             type="radio"
             class="live"
             name="live"
-            value="1"
+            value="<%= event.live %>"
             onclick="toggle_location()"
           />
           <label for="live">In Person</label>
@@ -78,7 +79,7 @@
             type="radio"
             class="live"
             name="live"
-            value="0"
+            value="<%= event.live %>"
             onclick="toggle_location()"
           />
           <label for="live">Online</label>
@@ -88,11 +89,21 @@
         class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
       >
         <div class="eventType">
-          <input type="radio" class="public" name="public" value="0" />
+          <input
+            type="radio"
+            class="public"
+            name="public"
+            value="<%= event.public %>"
+          />
           <label for="public">Private</label>
         </div>
         <div class="eventType">
-          <input type="radio" class="public" name="public" value="1" />
+          <input
+            type="radio"
+            class="public"
+            name="public"
+            value="<%= event.public %>"
+          />
           <label for="public">Public</label>
         </div>
       </div>
@@ -151,6 +162,17 @@
 ></script>
 
 <script>
+  // Set min date
+  const today = new Date();
+  const time = today.getHours() + ":" + today.getMinutes();
+  document.getElementById("start_time").value = time;
+  document.getElementById("end_time").value = time;
+
+  const setMinDate = () => {
+    document.getElementById("end_date").min =
+      document.getElementById("start_date").value;
+  };
+
   // Autocomplete location
   function initMap() {
     var input = document.getElementById("searchInput");
@@ -166,6 +188,8 @@
   // Input start Date, set today as default date
   const inputStartDate = document.getElementById("start_date");
   inputStartDate.min = new Date().toISOString().split("T")[0];
+  // inputStartDate.valueAsDate = "<%= moment(event.start_date).format() %>";
+
   inputStartDate.valueAsDate = new Date();
   const inputEndDate = document.getElementById("end_date");
   inputEndDate.valueAsDate = new Date();
