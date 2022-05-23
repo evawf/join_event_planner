@@ -1,0 +1,38 @@
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
+
+<div
+  class="container-fluid d-flex col-md-8 pt-md-5 flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
+>
+  <!-- My Friends  -->
+  <h5 class="text-center my-3">My Friends</h5>
+  <form
+    action="/event/<%= event.id %>/invite"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <% friends.forEach((friend) => { %>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      <label for="friends" class="mx-3">
+        <img
+          src="/<%= friend.avatar %>"
+          alt=""
+          style="width: 50px; height: auto; border-radius: 25px"
+        />
+        <%= friend.first_name %> <%= friend.last_name %>
+      </label>
+      <input
+        type="checkbox"
+        name="friends"
+        value="<%= friend.id %>"
+        class="mx-3"
+      />
+    </div>
+    <hr />
+    <% }) %>
+    <div class="mb-3 d-flex flex-column align-items-center">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
+
+<%- include('./partials/footer') %>

@@ -665,6 +665,70 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
+const showInvitations = async (req, res) => {
+  try {
+    const userId = req.cookies.userId;
+    const res1 = await pool.query(
+      `SELECT
+      e.name,
+      e.start_date,
+      e.start_time,
+      e.event_location,
+      e.id
+      FROM events e
+      INNER JOIN invitations i ON e.id=i.event_id
+      WHERE i.receiver_id=$1
+      `,
+      [userId]
+    );
+    const invitationsData = res1.rows;
+    res.render("invitations", { events: invitationsData });
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: err });
+    return;
+  }
+};
+
+const showInvitationForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const res0 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
+    const eventData = res0.rows[0];
+    const userId = req.cookies.userId;
+    const res1 = await pool.query(
+      `
+      SELECT
+      u.id,
+      u.first_name,
+      u.last_name,
+      u.avatar
+      FROM users u
+      INNER JOIN followers f 
+      ON u.id=f.followee_id
+      WHERE f.follower_id=$1
+      `,
+      [userId]
+    );
+
+    const friendsData = res1.rows;
+    res.render("invitationForm", { friends: friendsData, event: eventData });
+  } catch (err) {
+    console.log("Error messge:", err);
+    res.status(404).render("error", { error: err });
+    return;
+  }
+};
+
+const postInvitations = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: err });
+    return;
+  }
+};
+
 /***************************************************************
  Middleware for Login check
  **************************************************************/
@@ -753,6 +817,11 @@ app.put(
   multerUpload.single("avatar"),
   updateUserInfo
 );
+
+// Invitation routes
+app.get("/invitations", isLoggedIn, showInvitations);
+app.get("/event/:id/invite", isLoggedIn, showInvitationForm);
+app.post("/event/:id/invite", isLoggedIn, postInvitations);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);

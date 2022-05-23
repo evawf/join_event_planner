@@ -55,4 +55,12 @@ CREATE TABLE followers (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE invitations (
+  id SERIAL PRIMARY KEY,
+  sender_id INTEGER NOT NULL REFERENCES users(id),
+  receiver_id INTEGER NOT NULL REFERENCES users(id),
+  event_id INTEGER NOT NULL REFERENCES events(id),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+); 
+
 -- CREATE TABLE types (id SERIAL PRIMARY KEY, name TEXT);
