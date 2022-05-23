@@ -624,12 +624,13 @@ const followUser = async (req, res) => {
   }
 };
 
-const editUserProfile = async (req, res) => {
+const editUserPage = async (req, res) => {
   try {
     const userId = req.cookies.userId;
     const res1 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
     const userData = res1.rows[0];
-    res.render("editUserProfile", {
+    console.log(userData);
+    res.render("editUserPage", {
       user: userData,
     });
   } catch (err) {
@@ -642,6 +643,8 @@ const editUserProfile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.cookies.userId;
+    console.log(userId);
+    console.log(req.body);
     const { first_name, last_name, about_me } = req.body;
     console.log(first_name);
     console.log(req?.file?.filename);
@@ -755,7 +758,7 @@ app.post("/event/:id/likes", isLoggedIn, postLikes);
 app.get("/user/:id", isLoggedIn, showUserProfile);
 app.post("/user/:id/unfollow", isLoggedIn, unfollowUser);
 app.post("/user/:id/follow", isLoggedIn, followUser);
-app.get("/user/:id/edit", isLoggedIn, editUserProfile);
+app.get("/user/:id/edit", isLoggedIn, editUserPage);
 app.put("/user/:id/edit", isLoggedIn, updateUserProfile);
 
 app.listen(PORT, () => {
