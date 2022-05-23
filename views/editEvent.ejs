@@ -59,17 +59,19 @@
         />
       </div>
     </div>
-    <!-- Event types -->
+    <!-- Event types : In Person or Online -->
     <div class="mb-3">
       <div
         class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
       >
+        <% if(event.live){ %>
         <div class="eventType">
           <input
             type="radio"
             class="live"
             name="live"
-            value="<%= event.live %>"
+            value="1"
+            checked
             onclick="toggle_location()"
           />
           <label for="live">In Person</label>
@@ -79,33 +81,58 @@
             type="radio"
             class="live"
             name="live"
-            value="<%= event.live %>"
+            value="0"
             onclick="toggle_location()"
           />
           <label for="live">Online</label>
         </div>
+        <% } else {%>
+        <div class="eventType">
+          <input
+            type="radio"
+            class="live"
+            name="live"
+            value="1"
+            onclick="toggle_location()"
+          />
+          <label for="live">In Person</label>
+        </div>
+        <div class="eventType">
+          <input
+            type="radio"
+            class="live"
+            name="live"
+            value="0"
+            checked
+            onclick="toggle_location()"
+          />
+          <label for="live">Online</label>
+        </div>
+        <% } %>
       </div>
+      <!-- Event types : Public or Private -->
       <div
         class="container-fluid d-flex flex-row justify-content-evenly align-items-center"
       >
+        <% if(event.public){ %>
         <div class="eventType">
-          <input
-            type="radio"
-            class="public"
-            name="public"
-            value="<%= event.public %>"
-          />
+          <input type="radio" class="public" name="public" value="0" />
           <label for="public">Private</label>
         </div>
         <div class="eventType">
-          <input
-            type="radio"
-            class="public"
-            name="public"
-            value="<%= event.public %>"
-          />
+          <input type="radio" class="public" name="public" value="1" checked />
           <label for="public">Public</label>
         </div>
+        <% } else { %>
+        <div class="eventType">
+          <input type="radio" class="public" name="public" value="0" checked />
+          <label for="public">Private</label>
+        </div>
+        <div class="eventType">
+          <input type="radio" class="public" name="public" value="1" />
+          <label for="public">Public</label>
+        </div>
+        <% } %>
       </div>
     </div>
     <!-- External Event Link  -->
@@ -197,11 +224,11 @@
   // Show/Hide location div
   const locationDiv = document.getElementById("location");
   const public = document.querySelectorAll(".public");
-  public[0].checked = "true";
+  // public[0].checked = "true";
   const live = document.querySelectorAll(".live");
-  live[0].checked = "true";
+  // live[0].checked = "true";
   const toggle_location = () => {
-    if (live[1].checked) {
+    if (live.checked) {
       locationDiv.style.display = "none";
     } else {
       locationDiv.style.display = "block";

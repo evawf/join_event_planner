@@ -417,7 +417,6 @@ const updateEvent = async (req, res) => {
     } else {
       location = "Online";
     }
-    console.log(req.body.event_name);
     // Update event table
     await pool.query(
       "UPDATE events SET name=$1, start_date=$2, start_time=$3, end_date=$4, end_time=$5, event_link=$6, event_location=$7, description=$8, owner_id=$9, live=$10, public=$11 WHERE id=$12",
