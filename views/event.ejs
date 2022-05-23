@@ -38,8 +38,10 @@
           <p><%= event.description %></p>
           <hr />
           <!-- Display Map  -->
+          <% if(event.event_location !== "Online") { %>
           <div id="map"></div>
           <hr />
+          <% } %>
           <!-- Only event owner can edit or delete event  -->
           <% if(currentUser.id === event.owner_id) { %>
           <div class="d-flex flex-row justify-content-center">
@@ -240,25 +242,27 @@
     }
   };
 
-  // Mapbox API
-  const lon = JSON.parse("<%= geoLon %>");
-  const lat = JSON.parse("<%= geoLat %>");
-  mapboxgl.accessToken = "<%= MAPBOX_KEY %>";
-  const map = new mapboxgl.Map({
-    container: "map",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [lon, lat],
-    zoom: 13,
-  });
+  if ("<%= event.event_location %>" !== "Online") {
+    // Mapbox API
+    const lon = JSON.parse("<%= geoLon %>");
+    const lat = JSON.parse("<%= geoLat %>");
+    mapboxgl.accessToken = "<%= MAPBOX_KEY %>";
+    const map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [lon, lat],
+      zoom: 13,
+    });
 
-  // Add the control to the map.
-  map.addControl(
-    new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      mapboxgl: mapboxgl,
-    })
-  );
+    // Add the control to the map.
+    map.addControl(
+      new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+      })
+    );
 
-  map.addControl(new mapboxgl.NavigationControl());
-  const marker = new mapboxgl.Marker().setLngLat([lon, lat]).addTo(map);
+    map.addControl(new mapboxgl.NavigationControl());
+    const marker = new mapboxgl.Marker().setLngLat([lon, lat]).addTo(map);
+  }
 </script>
