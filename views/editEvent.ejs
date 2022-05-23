@@ -4,11 +4,7 @@
   class="container-fluid justify-content-center d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">Update Event</h4>
-  <form
-    action="/event/<%= event.id %>/edit?_method=PUT"
-    method="POST"
-    enctype="multipart/form-data"
-  >
+  <form action="/event/<%= event.id %>/edit?_method=PUT" method="POST">
     <!-- Event Name  -->
     <div class="mb-3">
       <input
