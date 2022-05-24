@@ -351,7 +351,7 @@ const displayEventInfo = async (req, res) => {
     const userId = req.cookies.userId;
     const res0 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
     const eventData = res0.rows[0];
-    if (!eventData.public) {
+    if (!eventData.public && Number(userId) !== eventData.owner_id) {
       const res1 = await pool.query(
         `SELECT receiver_id FROM invitations WHERE event_id=$1`,
         [id]
