@@ -147,7 +147,9 @@ const authUserLogin = async (req, res) => {
       values
     );
     if (result.rows.length === 0) {
-      res.status(403).send("sorry! User doesn't exist!");
+      res.status(403).render("error0", {
+        error: "User doesn't exist, please register first!",
+      });
       return;
     }
     const user = result.rows[0];
@@ -155,7 +157,9 @@ const authUserLogin = async (req, res) => {
     shaObj.update(req.body.password);
     const hashedPassword = shaObj.getHash("HEX");
     if (user.hashed_password !== hashedPassword) {
-      res.status(403).send("Login failed!");
+      res.status(403).render("error0", {
+        error: "Wrong password!",
+      });
       return;
     } else {
       // Generate the hashed cookie value
@@ -171,7 +175,7 @@ const authUserLogin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: error });
+    res.status(404).render("error0", { error: error });
     return;
   }
 };
