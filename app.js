@@ -417,6 +417,7 @@ const editEvent = async (req, res) => {
       res.render("editEvent", {
         user: userData,
         event: eventData,
+        place_key: PLACE_KEY,
       });
     } else {
       res.status(404).send("Sorry, only event owner can edit this page!");
