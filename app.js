@@ -81,6 +81,7 @@ const postUserAccount = async (req, res) => {
     const res0 = await pool.query("SELECT * FROM users");
     const userData = res0.rows;
     for (let i = 0; i < userData.length; i += 1) {
+      // If email already registered
       if (newUserEmail === userData[i].email) {
         res
           .status(404)
