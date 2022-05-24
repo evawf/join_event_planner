@@ -3,11 +3,11 @@
   class="container-fluid justify-content-center col-md-8 col-lg-3 pt-md-5 d-flex flex-column align-items-center bd-highlight"
 >
   <h4 class="mb-4">LOG IN</h4>
-  <form action="/login" method="POST">
+  <form action="/login" method="POST" class="needs-validation" novalidate>
     <div class="mb-3">
       <input
         class="form-control"
-        type="text"
+        type="email"
         name="email"
         id="email"
         placeholder="Email"
@@ -35,3 +35,4 @@
   </form>
 </div>
 <%- include('./partials/homeFooter') %>
+<script src="./javascript/validateForms.js"></script>
