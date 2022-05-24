@@ -159,13 +159,15 @@ const showAllEvents = async (req, res) => {
     const userData = res1.rows[0];
     // Public Events from other users - Blue
     const res2 = await pool.query(
-      `SELECT * FROM events WHERE public=true AND owner_id!=${userId} AND end_date>=CURRENT_DATE`
+      `SELECT * FROM events WHERE public=true AND owner_id!=$1 AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`,
+      [userId]
     );
     const publicEventsData = res2.rows;
 
     // Public Events I created - Green
     const res3 = await pool.query(
-      `SELECT * FROM events WHERE public=true AND owner_id=${userId} AND end_date>=CURRENT_DATE`
+      `SELECT * FROM events WHERE public=true AND owner_id=$1 AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`,
+      [userId]
     );
     const myEventsData = res3.rows;
 
@@ -192,8 +194,10 @@ const showMyEvents = async (req, res) => {
       `
       SELECT * 
       FROM events 
-      WHERE owner_id=${userId}
-      `
+      WHERE owner_id=$1 AND public=FALSE
+      ORDER by start_date, start_time ASC
+      `,
+      [userId]
     );
     const myEventsData = res2.rows;
     res.render("myEvents", {
@@ -224,6 +228,7 @@ const showPastEvents = async (req, res) => {
       WHERE e.end_date < NOW()
         AND ue.isJoin=true
         AND ue.user_id=$1
+        ORDER by start_date, start_time DESC
       `,
       [userId]
     );
@@ -254,7 +259,8 @@ const showIncomingEvents = async (req, res) => {
       JOIN user_events ue ON e.id = ue.event_id 
       WHERE e.end_date > NOW()
         AND ue.isJoin=true
-        AND ue.user_id = $1 
+        AND ue.user_id = $1
+        ORDER by start_date, start_time ASC
       `,
       [userId]
     );
@@ -450,6 +456,7 @@ const deleteEvent = async (req, res) => {
     await pool.query("DELETE FROM user_events WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
+    await pool.query("DELETE FROM invitations WHERE event_id=$1", [id]);
     // To delete event from other tables where there is a event_id, to be added
     res.redirect("/myEvents");
   } catch (err) {
