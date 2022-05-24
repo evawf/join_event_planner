@@ -65,9 +65,9 @@ const displayHomepage = (req, res) => {
 const createUserAccount = (req, res) => {
   try {
     res.render("signupForm");
-  } catch (err) {
-    console.log("Error messge:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -117,9 +117,9 @@ const postUserAccount = async (req, res) => {
       );
     }
     res.redirect("/login");
-  } catch (err) {
-    console.log("Error messge:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -129,7 +129,7 @@ const renderUserLogin = async (req, res) => {
     res.render("loginForm");
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: err });
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -170,7 +170,7 @@ const authUserLogin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: err });
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -205,9 +205,9 @@ const showAllEvents = async (req, res) => {
       publicEvents: publicEventsData,
       myEvents: myEventsData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -231,9 +231,9 @@ const showMyEvents = async (req, res) => {
       user: userData,
       myEvents: myEventsData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -263,9 +263,9 @@ const showPastEvents = async (req, res) => {
     res.render("pastEvents", {
       pastEvents: pastEventsData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -295,9 +295,9 @@ const showIncomingEvents = async (req, res) => {
     res.render("incomingEvents", {
       incomingEvents: incomingEventsData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -311,9 +311,9 @@ const createEvent = async (req, res) => {
       user: userData,
       place_key: PLACE_KEY,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -345,9 +345,9 @@ const postEvent = async (req, res) => {
       data
     );
     res.redirect("/events");
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -409,9 +409,9 @@ const displayEventInfo = async (req, res) => {
       geoLon: coodinatesData.coordinates[0],
       geoLat: coodinatesData.coordinates[1],
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -434,9 +434,9 @@ const editEvent = async (req, res) => {
       res.status(404).send("Sorry, only event owner can edit this page!");
       return;
     }
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -469,9 +469,9 @@ const updateEvent = async (req, res) => {
       ]
     );
     res.redirect(`/event/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -486,9 +486,9 @@ const deleteEvent = async (req, res) => {
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM invitations WHERE event_id=$1", [id]);
     res.redirect("/myEvents");
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -501,9 +501,9 @@ const postComments = async (req, res) => {
       [id, req.body.comment, req.cookies.userId]
     );
     res.redirect(`/event/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -531,9 +531,9 @@ const postJoin = async (req, res) => {
     }
 
     res.redirect(`/event/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -567,9 +567,9 @@ const postLikes = async (req, res) => {
       );
     }
     res.redirect(`/event/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -603,9 +603,9 @@ const showUserProfile = async (req, res) => {
       followees: followeesData,
       followers: followersData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -628,9 +628,9 @@ const unfollowUser = async (req, res) => {
       );
     }
     res.redirect(`/user/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -651,9 +651,9 @@ const followUser = async (req, res) => {
       );
     }
     res.redirect(`/user/${id}`);
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -666,9 +666,9 @@ const editUserInfo = async (req, res) => {
     res.render("editUserInfo", {
       user: userData,
     });
-  } catch (err) {
-    console.log("Error message:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error message:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -719,7 +719,7 @@ const showInvitations = async (req, res) => {
     res.render("invitations", { events: invitationsData });
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: err });
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -747,9 +747,9 @@ const showInvitationForm = async (req, res) => {
 
     const friendsData = res1.rows;
     res.render("invitationForm", { friends: friendsData, event: eventData });
-  } catch (err) {
-    console.log("Error messge:", err);
-    res.status(404).render("error", { error: err });
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -772,7 +772,7 @@ const postInvitations = async (req, res) => {
     res.redirect(`/event/${id}`);
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: err });
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -809,7 +809,7 @@ app.use((req, res, next) => {
           next();
         })
         .catch((error) => {
-          console.log("error");
+          console.log("error", error);
         });
       return;
     }
