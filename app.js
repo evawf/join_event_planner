@@ -186,24 +186,12 @@ const showAllEvents = async (req, res) => {
     const userData = res1.rows[0];
     // Public Events from other users - Blue
     const res2 = await pool.query(
-      `SELECT * FROM events WHERE public=true AND owner_id!=$1 AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`,
-      [userId]
+      `SELECT * FROM events WHERE public=true AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`
     );
     const publicEventsData = res2.rows;
-
-    // Public Events I created - Green
-    const res3 = await pool.query(
-      `SELECT * FROM events WHERE public=true AND owner_id=$1 AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`,
-      [userId]
-    );
-    const myEventsData = res3.rows;
-
-    // Private Events I was invited - Green - To Be Added Later
-
     res.render("events", {
       user: userData,
       publicEvents: publicEventsData,
-      myEvents: myEventsData,
     });
   } catch (error) {
     console.log("Error message:", error);
