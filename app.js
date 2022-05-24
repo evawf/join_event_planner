@@ -77,21 +77,48 @@ const postUserAccount = async (req, res) => {
     const shaObj = new jsSHA("SHA-512", "TEXT", { encoding: "UTF8" });
     shaObj.update(req.body.password);
     const hashedPassword = shaObj.getHash("HEX");
-    const values = [
-      req.body.first_name,
-      req.body.last_name,
-      req.file.filename,
-      req.body.about_me,
-      req.body.email,
-      hashedPassword,
-    ];
-    await pool.query(
-      "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
-      values
-    );
+    const newUserEmail = req.body.email;
+    const res0 = await pool.query("SELECT * FROM users");
+    const userData = res0.rows;
+    for (let i = 0; i < userData.length; i += 1) {
+      if (newUserEmail === userData[i].email) {
+        res
+          .status(404)
+          .render("error0", { error: "Sorry, user already exists!" });
+        return;
+      }
+    }
+
+    if (req?.file?.filename) {
+      const values = [
+        req.body.first_name,
+        req.body.last_name,
+        req.file.filename,
+        req.body.about_me,
+        req.body.email,
+        hashedPassword,
+      ];
+      await pool.query(
+        "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
+        values
+      );
+    } else {
+      const values = [
+        req.body.first_name,
+        req.body.last_name,
+        "574ac79478da34f68d898c69bdc8ffda",
+        req.body.about_me,
+        req.body.email,
+        hashedPassword,
+      ];
+      await pool.query(
+        "INSERT INTO users (first_name, last_name, avatar, about_me, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6)",
+        values
+      );
+    }
     res.redirect("/login");
-  } catch (error) {
-    console.log("Error messge:", error);
+  } catch (err) {
+    console.log("Error messge:", err);
     res.status(404).render("error", { error: err });
     return;
   }
@@ -452,12 +479,12 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
+    // Delete event from other tables where there is a event_id, to be added
     await pool.query("DELETE FROM events WHERE id=$1", [id]);
     await pool.query("DELETE FROM user_events WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM invitations WHERE event_id=$1", [id]);
-    // To delete event from other tables where there is a event_id, to be added
     res.redirect("/myEvents");
   } catch (err) {
     console.log("Error message:", err);
@@ -654,7 +681,7 @@ const updateUserInfo = async (req, res) => {
     if (req?.file?.filename) {
       values = [first_name, last_name, req.file.filename, about_me, userId];
       await pool.query(
-        "UPDATE users SET first_name=$1, last_name=$2, avatar=3$, about_me=$4 WHERE id=$5",
+        "UPDATE users SET first_name=$1, last_name=$2, avatar=$3, about_me=$4 WHERE id=$5",
         values
       );
     } else {
@@ -667,7 +694,7 @@ const updateUserInfo = async (req, res) => {
     res.redirect(`/user/${userId}`);
   } catch (error) {
     console.log("Error messge:", error);
-    res.status(404).render("error", { error: err });
+    res.status(404).render("error", { error: error });
     return;
   }
 };
@@ -732,7 +759,6 @@ const postInvitations = async (req, res) => {
     const { id } = req.params;
     const userId = req.cookies.userId;
     const friendIds = req.body.friend_ids;
-
     for (let i = 0; i < friendIds.length; i += 1) {
       await pool.query(
         `
