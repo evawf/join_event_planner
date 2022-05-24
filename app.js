@@ -348,9 +348,26 @@ const postEvent = async (req, res) => {
 const displayEventInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const res1 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
-    const eventData = res1.rows[0];
     const userId = req.cookies.userId;
+    const res0 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
+    const eventData = res0.rows[0];
+    if (!eventData.public) {
+      const res1 = await pool.query(
+        `SELECT receiver_id FROM invitations WHERE event_id=$1`,
+        [id]
+      );
+      const invitationData = res1.rows;
+      let invitedUserIds = [];
+      for (let i = 0; i < invitationData.length; i += 1) {
+        invitedUserIds.push(invitationData[i].receiver_id);
+      }
+      if (!invitedUserIds.includes(Number(userId))) {
+        res.status(403).render("error", {
+          error: "You's not authorized to view this event!",
+        });
+        return;
+      }
+    }
     const res2 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
     const userData = res2.rows[0];
     // Event Owner
@@ -817,6 +834,30 @@ const isLoggedIn = async (req, res, next) => {
     return;
   }
   await res.redirect("/login");
+};
+
+const isInvitedUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.cookies.userId;
+    const res0 = await pool.query(
+      `SELECT receiver_id FROM invitations WHERE event_id=$1`,
+      [id]
+    );
+    const invitationData = res0.rows;
+    console.log(invitationData);
+    if (invitationData.includes(userId)) {
+      next();
+      return;
+    } else {
+      res
+        .status(403)
+        .render("error", { error: "You's not authorized to view this event!" });
+    }
+  } catch (error) {
+    console.log("error message:", error);
+    res.status(404).render("error", error);
+  }
 };
 
 /*
