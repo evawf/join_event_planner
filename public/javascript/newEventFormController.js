@@ -1,10 +1,8 @@
-// Set min date
+// Set default time/date is current time/date
 const today = new Date();
-const time = today.getHours() + ":" + today.getMinutes();
-
+const time = "0" + today.getHours() + ":" + today.getMinutes();
 document.getElementById("start_time").value = time;
 document.getElementById("end_time").value = time;
-
 const setMinDate = () => {
   document.getElementById("end_date").min =
     document.getElementById("start_date").value;
