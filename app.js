@@ -713,21 +713,61 @@ const updateUserInfo = async (req, res) => {
 const showInvitations = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    const res1 = await pool.query(
-      `SELECT
+    // Get all accepted invitations
+    const res0 = await pool.query(
+      `
+      SELECT
       e.name,
       e.start_date,
       e.start_time,
       e.event_location,
-      e.id
+      e.id,
+      ue.isJoin
       FROM events e
-      INNER JOIN invitations i ON e.id=i.event_id
-      WHERE i.receiver_id=$1
-      `,
+      JOIN invitations i ON e.id=i.event_id
+     LEFT JOIN user_events ue ON i.receiver_id=ue.user_id AND i.event_id=ue.event_id
+      WHERE i.receiver_id=$1                                             
+      ORDER by e.start_date, e.start_time ASC`,
       [userId]
     );
-    const invitationsData = res1.rows;
-    res.render("invitations", { events: invitationsData });
+    const invitationsData = res0.rows;
+
+    // const resX = await pool.query(
+    //   `SELECT
+    //   e.name,
+    //   e.start_date,
+    //   e.start_time,
+    //   e.event_location,
+    //   e.id
+    //   FROM events e
+    //   INNER JOIN invitations i ON e.id=i.event_id
+    //   WHERE i.receiver_id=$1
+    //   ORDER by e.start_date, e.start_time ASC
+    //   `,
+    //   [userId]
+    // );
+    // const invitationsData = resX.rows;
+    // // Check if already join the event
+    // const { id } = req.params;
+    // let isJoinedArr = [];
+    // for (let i = 0; i < invitationsData.length; i += 1) {
+    //   const res1 = await pool.query(
+    //     `SELECT
+    //     ue.isJoin
+    //     FROM user_events ue
+    //     INNER JOIN events e
+    //     ON ue.event_id=e.id
+    //     WHERE ue.user_id=$1 AND e.id=$2
+    //     `,
+    //     [userId, invitationsData[i].id]
+    //   );
+    //   isJoinedArr.push(res1.rows[0]);
+    // }
+    // console.log(isJoinedArr);
+    console.log(invitationsData);
+    res.render("invitations", {
+      events: invitationsData,
+    });
   } catch (error) {
     console.log("Error messge:", error);
     res.status(404).render("error", { error: error });
