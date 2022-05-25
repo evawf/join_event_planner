@@ -167,7 +167,10 @@
             aria-labelledby="staticBackdropLabel"
             aria-hidden="true"
           >
-            <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div
+              class="modal-dialog modal-sm modal-dialog-centered"
+              style="margin: 0 40px"
+            >
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="staticBackdropLabel">
@@ -184,14 +187,14 @@
                   <form
                     action="/event/<%= event.id %>/comments"
                     method="POST"
-                    class="border-0 py-0 my-0"
+                    class="border-0 py-0 my-0 text-center"
                   >
                     <textarea
                       name="comment"
                       id="comment"
                       class="form-control"
                     ></textarea>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary mt-1">
                       Submit
                     </button>
                   </form>
