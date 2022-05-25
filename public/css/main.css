@@ -35,6 +35,15 @@ footer {
   text-align: center;
 }
 
+h1 {
+  font-family: "Abril Fatface", cursive;
+  font-size: xx-large;
+}
+
+h2 {
+  font-family: "Abril Fatface", cursive;
+}
+
 h5 {
   font-family: "Abril Fatface", cursive;
   font-size: medium;

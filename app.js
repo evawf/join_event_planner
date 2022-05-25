@@ -794,6 +794,16 @@ const postInvitations = async (req, res) => {
   }
 };
 
+const showSearchResult = async (req, res) => {
+  try {
+    res.render("searchResult");
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: error });
+    return;
+  }
+};
+
 /***************************************************************
  Middleware for Login check
  **************************************************************/
@@ -911,6 +921,9 @@ app.put(
 app.get("/invitations", isLoggedIn, showInvitations);
 app.get("/event/:id/invite", isLoggedIn, showInvitationForm);
 app.post("/event/:id/invite", isLoggedIn, postInvitations);
+
+// Search route
+app.get("/result", isLoggedIn, showSearchResult);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);
