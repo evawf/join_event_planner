@@ -141,6 +141,11 @@ form {
   color: gray;
 }
 
+.searchBar {
+  border-radius: 0px !important;
+  border: none !important;
+}
+
 #about_me {
   color: gray;
   height: 80px;
