@@ -349,27 +349,30 @@ const displayEventInfo = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.cookies.userId;
-    const res0 = await pool.query("SELECT * FROM events WHERE id=$1", [id]);
+    const res0 = await pool.query(
+      `
+        SELECT *,
+          start_date < now() AS past
+        FROM events WHERE id=$1
+      `,
+      [id]
+    );
     const eventData = res0.rows[0];
     if (!eventData.public && Number(userId) !== eventData.owner_id) {
       const res1 = await pool.query(
-        `SELECT receiver_id FROM invitations WHERE event_id=$1`,
-        [id]
+        `SELECT count(1) AS count
+        FROM invitations
+        WHERE event_id = $1 AND receiver_id = $2
+        `,
+        [id, userId]
       );
-      const invitationData = res1.rows;
-      let invitedUserIds = [];
-      for (let i = 0; i < invitationData.length; i += 1) {
-        invitedUserIds.push(invitationData[i].receiver_id);
-      }
-      if (!invitedUserIds.includes(Number(userId))) {
+      if (res1.rows[0].count < 1) {
         res.status(403).render("error", {
           error: "You's not authorized to view this event!",
         });
-        return;
       }
     }
-    const res2 = await pool.query("SELECT * FROM users WHERE id=$1", [userId]);
-    const userData = res2.rows[0];
+    const userData = req.user;
     // Event Owner
     const ownerId = eventData.owner_id;
     const res3 = await pool.query("SELECT * FROM users WHERE id=$1", [ownerId]);
@@ -386,19 +389,24 @@ const displayEventInfo = async (req, res) => {
     const commentData = res4.rows;
     const res5 = await pool.query(
       `
-      SELECT j.isJoin, u.avatar, u.id
+      SELECT j.isjoin, u.avatar, u.id
       FROM user_events j
-      JOIN users u ON j.user_id = u.id AND j.isJoin=true
+      JOIN users u ON j.user_id = u.id
       WHERE event_id=$1
       `,
       [id]
     );
     const userJoinData = res5.rows;
+    const joining =
+      userJoinData.filter((ue) => ue.id == userId && ue.isjoin).length > 0;
+    const notJoining =
+      userJoinData.filter((ue) => ue.id == userId && !ue.isjoin).length > 0;
+
     const res6 = await pool.query(
-      "SELECT * FROM likes WHERE event_id=$1 AND liked=$2",
-      [id, true]
+      "SELECT count(1) FROM likes WHERE event_id=$1 AND liked",
+      [id]
     );
-    const likesData = res6.rows;
+    const likesCount = res6.rows[0].count;
     const location = eventData.event_location;
     const geoData = await geocoder
       .forwardGeocode({
@@ -407,14 +415,17 @@ const displayEventInfo = async (req, res) => {
       })
       .send();
     const coodinatesData = geoData.body.features[0].geometry;
+    console.log(userJoinData);
     res.render("event", {
       event: eventData,
       userId: userId,
+      joining,
+      notJoining,
       user: userData,
       owner: ownerData,
       comments: commentData,
-      attendees: userJoinData,
-      likes: likesData,
+      attendees: userJoinData.filter((ue) => ue.isjoin),
+      likes: likesCount,
       MAPBOX_KEY: MAPBOX_KEY,
       geoLon: coodinatesData.coordinates[0],
       geoLat: coodinatesData.coordinates[1],
@@ -755,11 +766,20 @@ const showInvitationForm = async (req, res) => {
       u.last_name,
       u.avatar
       FROM users u
-      INNER JOIN followers f 
-      ON u.id=f.followee_id
+      INNER JOIN followers f ON u.id=f.followee_id
       WHERE f.follower_id=$1
+        AND u.id NOT IN (
+          SELECT receiver_id
+          FROM invitations
+          WHERE event_id = $2
+        )
+        AND u.id NOT IN (
+          SELECT user_id
+          FROM user_events
+          WHERE event_id = $3
+        )
       `,
-      [userId]
+      [userId, id, id]
     );
     const friendsData = res1.rows;
     res.render("invitationForm", { friends: friendsData, event: eventData });

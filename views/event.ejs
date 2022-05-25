@@ -45,28 +45,20 @@
           <!-- Only event owner can edit or delete event  -->
           <% if(currentUser.id === event.owner_id) { %>
           <div class="d-flex flex-row justify-content-center text-center">
-            <form
-              action="/event/<%= event.id %>/invite"
-              class="border-0 py-0 my-0"
+            <a
+              href="/event/<%= event.id %>/invite"
+              class="btn btn-info btn-sm mx-2"
+              style="width: 60px"
             >
-              <input
-                type="submit"
-                value="Invite"
-                class="btn btn-info btn-sm mx-2"
-                style="width: 60px"
-              />
-            </form>
-            <form
-              action="/event/<%= event.id %>/edit"
-              class="border-0 py-0 my-0"
+              Invite
+            </a>
+            <a
+              href="/event/<%= event.id %>/edit"
+              class="btn btn-success btn-sm mx-2"
+              style="width: 60px"
             >
-              <input
-                type="submit"
-                value="Edit"
-                class="btn btn-success btn-sm mx-2"
-                style="width: 60px"
-              />
-            </form>
+              Edit
+            </a>
             <form
               action="/event/<%= event.id %>?_method=DELETE"
               method="POST"
@@ -80,7 +72,7 @@
               />
             </form>
           </div>
-          <% } else { %>
+          <% } else if(!event.past) { %>
           <!-- users can choose to join or ignore  -->
           <div class="d-flex flex-row">
             <form
@@ -88,6 +80,7 @@
               method="POST"
               class="border-0 py-0 my-0 text-center"
             >
+              <% if( !joining ) { %>
               <button
                 type="submit"
                 name="isJoin"
@@ -97,6 +90,7 @@
               >
                 Join
               </button>
+              <% } %> <% if( !notJoining ) { %>
               <button
                 type="submit"
                 name="isJoin"
@@ -106,6 +100,7 @@
               >
                 Pass
               </button>
+              <% } %>
             </form>
           </div>
           <% } %>
@@ -153,7 +148,7 @@
               class="border-0 py-0 my-0 text-center"
             >
               <button class="btn border-0 like" id="likeBtn">
-                <%= likes.length %> Likes <i class="fa-solid fa-thumbs-up"></i>
+                <%= likes %> Likes <i class="fa-solid fa-thumbs-up"></i>
               </button>
             </form>
           </div>

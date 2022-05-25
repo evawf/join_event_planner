@@ -1,10 +1,15 @@
 // Set default time/date is current time/date
-const today = new Date();
+const now = new Date();
 let time;
-if (today.getHours() >= 10) {
-  time = today.getHours() + ":" + today.getMinutes();
+if (now.getHours() >= 10) {
+  time = now.getHours();
 } else {
-  time = "0" + today.getHours() + ":" + today.getMinutes();
+  time = "0" + now.getHours();
+}
+if (now.getMinutes() >= 10) {
+  time += ":" + now.getMinutes();
+} else {
+  time += ":0" + now.getMinutes();
 }
 document.getElementById("start_time").value = time;
 document.getElementById("end_time").value = time;
