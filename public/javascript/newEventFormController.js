@@ -1,6 +1,11 @@
 // Set default time/date is current time/date
 const today = new Date();
-const time = "0" + today.getHours() + ":" + today.getMinutes();
+let time;
+if (today.getHours() >= 10) {
+  time = today.getHours() + ":" + today.getMinutes();
+} else {
+  time = "0" + today.getHours() + ":" + today.getMinutes();
+}
 document.getElementById("start_time").value = time;
 document.getElementById("end_time").value = time;
 const setMinDate = () => {
