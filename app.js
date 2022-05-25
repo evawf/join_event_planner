@@ -796,7 +796,32 @@ const postInvitations = async (req, res) => {
 
 const showSearchResult = async (req, res) => {
   try {
-    res.render("searchResult");
+    const res0 = await pool.query("SELECT search_str FROM searches");
+    const x = res0.rows.length - 1;
+    console.log(res0.rows[x]);
+    const searchStr = res0.rows[x].search_str;
+    const res1 = await pool.query(
+      `SELECT * FROM users WHERE SIMILARITY(first_name, $1) > 0.4`,
+      [searchStr]
+    );
+    const searchResults = res1.rows;
+    console.log(searchResults);
+    res.render("searchResult", { users: searchResults });
+  } catch (error) {
+    console.log("Error messge:", error);
+    res.status(404).render("error", { error: error });
+    return;
+  }
+};
+
+const postSearch = async (req, res) => {
+  try {
+    console.log(req.body.search);
+    const searchStr = req.body.search;
+    await pool.query("INSERT INTO searches (search_str) VALUES($1)", [
+      searchStr,
+    ]);
+    res.redirect("/result");
   } catch (error) {
     console.log("Error messge:", error);
     res.status(404).render("error", { error: error });
@@ -924,6 +949,7 @@ app.post("/event/:id/invite", isLoggedIn, postInvitations);
 
 // Search route
 app.get("/result", isLoggedIn, showSearchResult);
+app.post("/result", isLoggedIn, postSearch);
 
 app.listen(PORT, () => {
   console.log(`App is listening on port ${PORT}.`);

@@ -63,4 +63,10 @@ CREATE TABLE invitations (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 ); 
 
+CREATE TABLE searches (
+  id SERIAL PRIMARY KEY,
+  search_str TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
 -- CREATE TABLE types (id SERIAL PRIMARY KEY, name TEXT);
