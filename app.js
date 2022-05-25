@@ -761,7 +761,6 @@ const showInvitationForm = async (req, res) => {
       `,
       [userId]
     );
-
     const friendsData = res1.rows;
     res.render("invitationForm", { friends: friendsData, event: eventData });
   } catch (error) {
@@ -776,16 +775,30 @@ const postInvitations = async (req, res) => {
     const { id } = req.params;
     const userId = req.cookies.userId;
     const friendIds = req.body.friend_ids;
+    console.log(userId);
+    console.log(friendIds);
+    console.log(id);
     for (let i = 0; i < friendIds.length; i += 1) {
-      await pool.query(
-        `
-        INSERT INTO invitations 
-        (sender_id, receiver_id, event_id) 
-        VALUES ($1, $2, $3)`,
-        [userId, friendIds[i], id]
+      const res0 = await pool.query(
+        `SELECT * FROM invitations WHERE receiver_id=$1 AND event_id=$2`,
+        [friendIds[i], id]
       );
+      const invitationData = res0.rows[0];
+      if (invitationData === undefined) {
+        await pool.query(
+          `
+          INSERT INTO invitations
+          (sender_id, receiver_id, event_id)
+          VALUES ($1, $2, $3)`,
+          [userId, friendIds[i], id]
+        );
+      } else {
+        res.render("error", {
+          error: "Hey, you already sent invitation once!",
+        });
+        return;
+      }
     }
-
     res.redirect(`/event/${id}`);
   } catch (error) {
     console.log("Error messge:", error);
