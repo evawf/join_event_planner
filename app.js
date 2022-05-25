@@ -798,15 +798,17 @@ const showSearchResult = async (req, res) => {
   try {
     const res0 = await pool.query("SELECT search_str FROM searches");
     const x = res0.rows.length - 1;
-    console.log(res0.rows[x]);
     const searchStr = res0.rows[x].search_str;
     const res1 = await pool.query(
       `SELECT * FROM users WHERE SIMILARITY(first_name, $1) > 0.4`,
       [searchStr]
     );
     const searchResults = res1.rows;
-    console.log(searchResults);
-    res.render("searchResult", { users: searchResults });
+    if (searchResults[0] === undefined) {
+      res.render("searchResult", { users: "0" });
+    } else {
+      res.render("searchResult", { users: searchResults });
+    }
   } catch (error) {
     console.log("Error messge:", error);
     res.status(404).render("error", { error: error });
@@ -816,7 +818,6 @@ const showSearchResult = async (req, res) => {
 
 const postSearch = async (req, res) => {
   try {
-    console.log(req.body.search);
     const searchStr = req.body.search;
     await pool.query("INSERT INTO searches (search_str) VALUES($1)", [
       searchStr,
