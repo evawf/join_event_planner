@@ -6,7 +6,7 @@
 
 ## How are you solving it?
 
-- We offer users Join, a event planner/tracker.
+- We offer users Join, an event planner/tracker.
 
 ## Who are the users and other stakeholders?
 
