@@ -358,6 +358,7 @@ const displayEventInfo = async (req, res) => {
       [id]
     );
     const eventData = res0.rows[0];
+    // Check if public/private event, then check if user is invited to view private event
     if (!eventData.public && Number(userId) !== eventData.owner_id) {
       const res1 = await pool.query(
         `SELECT count(1) AS count
@@ -415,7 +416,6 @@ const displayEventInfo = async (req, res) => {
       })
       .send();
     const coodinatesData = geoData.body.features[0].geometry;
-    console.log(userJoinData);
     res.render("event", {
       event: eventData,
       userId: userId,
@@ -501,12 +501,13 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.cookies.userId;
     // Delete event from other tables where there is a event_id, to be added
     await pool.query("DELETE FROM events WHERE id=$1", [id]);
     await pool.query("DELETE FROM user_events WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
-    await pool.query("DELETE FROM invitations WHERE event_id=$1", [id]);
+    await pool.query("DELETE FROM invitations WHERE sender_id=$1", [userId]);
     res.redirect("/myEvents");
   } catch (error) {
     console.log("Error message:", error);
@@ -909,30 +910,6 @@ const isLoggedIn = async (req, res, next) => {
     return;
   }
   await res.redirect("/login");
-};
-
-const isInvitedUser = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.cookies.userId;
-    const res0 = await pool.query(
-      `SELECT receiver_id FROM invitations WHERE event_id=$1`,
-      [id]
-    );
-    const invitationData = res0.rows;
-    console.log(invitationData);
-    if (invitationData.includes(userId)) {
-      next();
-      return;
-    } else {
-      res
-        .status(403)
-        .render("error", { error: "You's not authorized to view this event!" });
-    }
-  } catch (error) {
-    console.log("error message:", error);
-    res.status(404).render("error", error);
-  }
 };
 
 /*
