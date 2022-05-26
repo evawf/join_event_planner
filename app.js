@@ -191,7 +191,14 @@ const showAllEvents = async (req, res) => {
     const userData = res1.rows[0];
     // Public Events from other users - Blue
     const res2 = await pool.query(
-      `SELECT * FROM events WHERE public=true AND end_date>=CURRENT_DATE ORDER by start_date, start_time ASC`
+      `SELECT 
+      e.id, e.name, e.start_time, e.start_date, e.event_location, e.owner_id,
+      u.avatar
+      FROM events e
+      INNER JOIN users u
+      ON e.owner_id = u.id
+      WHERE public=true AND end_date>=CURRENT_DATE 
+      ORDER by start_date, start_time ASC`
     );
     const publicEventsData = res2.rows;
     res.render("events", {
@@ -212,10 +219,14 @@ const showMyEvents = async (req, res) => {
     const userData = res1.rows[0];
     const res2 = await pool.query(
       `
-      SELECT * 
-      FROM events 
-      WHERE owner_id=$1 AND public=FALSE
-      ORDER by start_date, start_time ASC
+      SELECT 
+      e.id, e.name, e.start_time, e.start_date, e.event_location, e.owner_id,
+      u.avatar
+      FROM events e
+      INNER JOIN users u
+      ON e.owner_id = u.id
+      WHERE e.owner_id=$1 AND e.public=FALSE
+      ORDER by e.start_date, e.start_time ASC
       `,
       [userId]
     );
@@ -236,19 +247,17 @@ const showPastEvents = async (req, res) => {
     const userId = req.cookies.userId;
     const res1 = await pool.query(
       `
-      SELECT e.id,
-        e.name,
-        e.start_date,
-        e.start_time,
-        e.event_location,
-        e.description,
-        ue.id AS user_events_id
+      SELECT 
+      e.id, e.name, e.start_date, e.start_time, e.event_location, e.owner_id,
+      ue.id AS user_events_id,
+      u.avatar 
       FROM events e
-      JOIN user_events ue ON e.id = ue.event_id 
+      JOIN user_events ue ON e.id = ue.event_id
+      JOIN users u ON u.id=e.owner_id
       WHERE e.end_date < NOW()
-        AND ue.isJoin=true
-        AND ue.user_id=$1
-        ORDER by start_date, start_time DESC
+      AND ue.isJoin=true
+      AND ue.user_id=$1
+      ORDER by e.start_date, e.start_time DESC;
       `,
       [userId]
     );
@@ -268,19 +277,17 @@ const showIncomingEvents = async (req, res) => {
     const userId = req.cookies.userId;
     const res1 = await pool.query(
       `
-      SELECT e.id,
-        e.name,
-        e.start_date,
-        e.start_time,
-        e.event_location,
-        e.description,
-        ue.id AS user_events_id
+      SELECT 
+      e.id, e.name, e.start_date, e.start_time, e.event_location, e.owner_id,
+      ue.id AS user_events_id,
+      U.avatar
       FROM events e
-      JOIN user_events ue ON e.id = ue.event_id 
+      JOIN user_events ue ON e.id = ue.event_id
+      JOIN users u ON u.id=e.owner_id
       WHERE e.end_date > NOW()
-        AND ue.isJoin=true
-        AND ue.user_id = $1
-        ORDER by start_date, start_time ASC
+      AND ue.isJoin=true
+      AND ue.user_id =$1
+      ORDER by start_date, start_time ASC;
       `,
       [userId]
     );
@@ -730,14 +737,12 @@ const showInvitations = async (req, res) => {
     const res0 = await pool.query(
       `
       SELECT
-      e.name,
-      e.start_date,
-      e.start_time,
-      e.event_location,
-      e.id,
-      ue.isJoin
+      e.id, e.name, e.start_date, e.start_time, e.event_location, e.owner_id,
+      ue.isJoin,
+      U.avatar
       FROM events e
       JOIN invitations i ON e.id=i.event_id
+      JOIN users u ON u.id=e.owner_id
       LEFT JOIN user_events ue ON i.receiver_id=ue.user_id AND i.event_id=ue.event_id
       WHERE i.receiver_id=$1                                             
       ORDER by e.start_date, e.start_time ASC`,

@@ -5,24 +5,35 @@
 >
   <!-- Past Events  -->
   <% pastEvents.forEach(event => { %>
-  <div class="card">
+  <div class="card d-flex flex-row">
     <div
-      class="card-body overflow-auto text-body my-1 py-1 bg-secondary bg-gradient"
+      class="d-flex justify-content-center align-items-center overflow-auto my-1 py-1 owner_avatarDiv"
+      style="width: 77px; height: 77px; border-radius: 15px 0 0 15px"
     >
-      <h5 class="card-title my-1"><%= event.name %></h5>
+      <a href="/user/<%= event.owner_id %>" class="">
+        <img
+          src="/<%= event.avatar %>"
+          alt=""
+          style="width: 50px; height: auto; border-radius: 25px"
+        />
+      </a>
+    </div>
+
+    <div
+      class="d-flex flex-column flex-grow-1 overflow-auto text-body my-1 py-1 bg-secondary"
+      style="height: 77px; padding-left: 0.5rem; border-radius: 0 15px 15px 0"
+      onclick="location.href='/event/<%=event.id%>';"
+    >
+      <h5 class="card-title my-1 lh-1"><%= event.name %></h5>
       <p class="card-text my-1 lh-1">
         <i class="bi bi-calendar-heart"></i>
-        <%= moment(event.start_time,"HH:mm:ss").format(timeFormat) %>, <%=
+        <%= moment(event.start_time, "HH:mm:ss").format(timeFormat) %>, <%=
         moment(event.start_date).format(dateFormat) %>
       </p>
       <p class="card-text my-1 lh-1">
-        <i class="bi bi-geo-alt"></i> <%= event.event_location %>
+        <i class="bi bi-geo-alt"></i>
+        <%= event.event_location %>
       </p>
-    </div>
-    <div class="card-foot d-flex justify-content-end w-100">
-      <a href="/event/<%= event.id %>" class="btn btn-outline-dark"
-        ><i class="fa-solid fa-angles-right"></i
-      ></a>
     </div>
   </div>
   <% }) %>
