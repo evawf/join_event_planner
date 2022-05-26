@@ -45,29 +45,40 @@
           <!-- Only event owner can edit or delete event  -->
           <% if(currentUser.id === event.owner_id) { %>
           <div class="d-flex flex-row justify-content-center text-center">
-            <a
-              href="/event/<%= event.id %>/invite"
-              class="btn btn-info btn-sm mx-2"
-              style="width: 60px"
+            <div
+              class="d-flex flex-row justify-content-center"
+              style="width: 30%"
             >
-              Invite
-            </a>
-            <a
-              href="/event/<%= event.id %>/edit"
-              class="btn btn-success btn-sm mx-2"
-              style="width: 60px"
+              <a
+                href="/event/<%= event.id %>/invite"
+                class="btn btn-info btn-sm"
+                style="width: 60px"
+              >
+                Invite
+              </a>
+            </div>
+            <div
+              class="d-flex flex-row justify-content-center"
+              style="width: 30%"
             >
-              Edit
-            </a>
+              <a
+                href="/event/<%= event.id %>/edit"
+                class="btn btn-success btn-sm"
+                style="width: 60px"
+              >
+                Edit
+              </a>
+            </div>
             <form
               action="/event/<%= event.id %>?_method=DELETE"
               method="POST"
               class="border-0 py-0 my-0"
+              style="width: 30%"
             >
               <input
                 type="submit"
                 value="Delete"
-                class="btn btn-warning btn-sm mx-2"
+                class="btn btn-danger btn-sm mx-2"
                 style="width: 60px"
               />
             </form>
