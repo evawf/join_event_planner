@@ -511,11 +511,11 @@ const deleteEvent = async (req, res) => {
     const { id } = req.params;
     const userId = req.cookies.userId;
     // Delete event from other tables where there is a event_id, to be added
-    await pool.query("DELETE FROM events WHERE id=$1", [id]);
     await pool.query("DELETE FROM user_events WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM invitations WHERE sender_id=$1", [userId]);
+    await pool.query("DELETE FROM events WHERE id=$1", [id]);
     res.redirect("/events");
   } catch (error) {
     console.log("Error message:", error);
