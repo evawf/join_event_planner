@@ -374,7 +374,7 @@ const displayEventInfo = async (req, res) => {
       }
     }
     const userData = req.user;
-    // Event Owner
+    // Get comment data
     const ownerId = eventData.owner_id;
     const res3 = await pool.query("SELECT * FROM users WHERE id=$1", [ownerId]);
     const ownerData = res3.rows[0];
@@ -388,6 +388,7 @@ const displayEventInfo = async (req, res) => {
       [id]
     );
     const commentData = res4.rows;
+
     const res5 = await pool.query(
       `
       SELECT j.isjoin, u.avatar, u.id
@@ -508,7 +509,7 @@ const deleteEvent = async (req, res) => {
     await pool.query("DELETE FROM comments WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM likes WHERE event_id=$1", [id]);
     await pool.query("DELETE FROM invitations WHERE sender_id=$1", [userId]);
-    res.redirect("/myEvents");
+    res.redirect("/events");
   } catch (error) {
     console.log("Error message:", error);
     res.status(404).render("error", { error: error });
@@ -725,7 +726,7 @@ const updateUserInfo = async (req, res) => {
 const showInvitations = async (req, res) => {
   try {
     const userId = req.cookies.userId;
-    // Get all accepted invitations
+    // Get all invitations
     const res0 = await pool.query(
       `
       SELECT
@@ -737,7 +738,7 @@ const showInvitations = async (req, res) => {
       ue.isJoin
       FROM events e
       JOIN invitations i ON e.id=i.event_id
-     LEFT JOIN user_events ue ON i.receiver_id=ue.user_id AND i.event_id=ue.event_id
+      LEFT JOIN user_events ue ON i.receiver_id=ue.user_id AND i.event_id=ue.event_id
       WHERE i.receiver_id=$1                                             
       ORDER by e.start_date, e.start_time ASC`,
       [userId]
@@ -796,28 +797,25 @@ const postInvitations = async (req, res) => {
     const { id } = req.params;
     const userId = req.cookies.userId;
     const friendIds = req.body.friend_ids;
-    console.log(userId);
-    console.log(friendIds);
-    console.log(id);
-    for (let i = 0; i < friendIds.length; i += 1) {
-      const res0 = await pool.query(
-        `SELECT * FROM invitations WHERE receiver_id=$1 AND event_id=$2`,
-        [friendIds[i], id]
-      );
-      const invitationData = res0.rows[0];
-      if (invitationData === undefined) {
-        await pool.query(
-          `
+    // Invited one friend
+    if (!Array.isArray(friendIds)) {
+      await pool.query(
+        `
           INSERT INTO invitations
           (sender_id, receiver_id, event_id)
           VALUES ($1, $2, $3)`,
+        [userId, friendIds, id]
+      );
+    } else {
+      for (let i = 0; i < friendIds.length; i += 1) {
+        // Inivted more friends
+        await pool.query(
+          `
+            INSERT INTO invitations
+            (sender_id, receiver_id, event_id)
+            VALUES ($1, $2, $3)`,
           [userId, friendIds[i], id]
         );
-      } else {
-        res.render("error", {
-          error: "Hey, you already sent invitation once!",
-        });
-        return;
       }
     }
     res.redirect(`/event/${id}`);
@@ -952,7 +950,6 @@ app.put(
   multerUpload.single("avatar"),
   updateUserInfo
 );
-
 // Invitation routes
 app.get("/invitations", isLoggedIn, showInvitations);
 app.get("/event/:id/invite", isLoggedIn, showInvitationForm);
