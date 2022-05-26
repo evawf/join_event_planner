@@ -1,0 +1,54 @@
+<%- include('./partials/header') %> <%- include('./partials/navbar') %>
+
+<div
+  class="container-fluid col-md-8 col-lg-4 pt-md-5 d-flex flex-column overflow-auto h-100 justify-content-start my-5 pb-4"
+>
+  <!-- Public Events  -->
+  <% publicEvents.forEach(event => { %>
+  <div class="card">
+    <% if(event.owner_id !== currentUser.id){ %>
+    <div
+      class="card-body overflow-auto text-body my-1 py-1 bg-info bg-gradient"
+    >
+      <h5 class="card-title my-1"><%= event.name %></h5>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-calendar-heart"></i>
+        <%= moment(event.start_time, "HH:mm:ss").format(timeFormat) %>, <%=
+        moment(event.start_date).format(dateFormat) %>
+      </p>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-geo-alt"></i>
+        <%= event.event_location %>
+      </p>
+    </div>
+    <div class="card-foot d-flex justify-content-end w-100">
+      <a href="/event/<%= event.id %>" class="btn btn-outline-dark"
+        ><i class="fa-solid fa-angles-right"></i
+      ></a>
+    </div>
+    <% } else { %>
+    <div
+      class="card-body overflow-auto text-body my-1 py-1 bg-success bg-gradient"
+    >
+      <h5 class="card-title my-1"><%= event.name %></h5>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-calendar-heart"></i>
+        <%= moment(event.start_time, "HH:mm:ss").format(timeFormat) %>, <%=
+        moment(event.start_date).format(dateFormat) %>
+      </p>
+      <p class="card-text my-1 lh-1">
+        <i class="bi bi-geo-alt"></i>
+        <%= event.event_location %>
+      </p>
+    </div>
+    <div class="card-foot d-flex justify-content-end w-100">
+      <a href="/event/<%= event.id %>" class="btn btn-outline-dark"
+        ><i class="fa-solid fa-angles-right"></i
+      ></a>
+    </div>
+    <% } %>
+  </div>
+  <% }) %>
+</div>
+
+<%- include('./partials/footer') %>
