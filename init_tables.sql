@@ -6,8 +6,9 @@ CREATE TABLE users (
   about_me TEXT,
   email TEXT NOT NULL,
   hashed_password TEXT NOT NULL,
-  created_at TIMESTAMPT WITH TIME ZONE NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
 CREATE TABLE events (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
@@ -21,7 +22,7 @@ CREATE TABLE events (
   owner_id INTEGER NOT NULL REFERENCES users(id),
   public BOOLEAN,
   live BOOLEAN,
-  created_at TIMESTAMPT WITH TIME ZONE NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE comments (
@@ -38,7 +39,7 @@ CREATE TABLE user_events (
   event_id INTEGER NOT NULL REFERENCES events(id),
   user_id INTEGER NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-)
+);
 
 CREATE TABLE likes (
   id SERIAL PRIMARY KEY,

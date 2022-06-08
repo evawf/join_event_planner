@@ -29,12 +29,25 @@ const PLACE_KEY = process.env.PLACE_API_KEY;
 const MAPBOX_KEY = process.env.MAPBOX_API_KEY;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const pgConnectionConfigs = {
-  user: "eva",
-  host: "localhost",
-  database: "joindb",
-  port: 5432,
-};
+
+let pgConnectionConfigs;
+
+if (process.env.DATABASE_URL) {
+  pgConnectionConfigs = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  };
+} else {
+  pgConnectionConfigs = {
+    user: "eva",
+    host: "localhost",
+    database: "joindb",
+    port: 5432,
+  };
+}
+
 const pool = new Pool(pgConnectionConfigs);
 
 //Static Files
